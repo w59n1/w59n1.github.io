@@ -36,9 +36,10 @@
         }
         #lightbox-image {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            filter: drop-shadow(15px 15px 30px rgba(0, 0, 0, 0.4)) 
-                    drop-shadow(8px 8px 15px rgba(0, 0, 0, 0.25))
-                    drop-shadow(3px 3px 8px rgba(0, 0, 0, 0.15));
+            filter: drop-shadow(0px 25px 50px rgba(0, 0, 0, 0.35)) 
+                    drop-shadow(0px 15px 25px rgba(0, 0, 0, 0.25))
+                    drop-shadow(0px 8px 15px rgba(0, 0, 0, 0.2))
+                    drop-shadow(0px -8px 20px rgba(0, 0, 0, 0.15));
         }
     </style>
 </head>
@@ -87,7 +88,7 @@
                 <img id="lightbox-image" src="" alt="" class="max-h-[60vh] md:max-h-[75vh] max-w-full h-auto w-auto object-contain cursor-pointer" onclick="closeLightbox()">
             </div>
             <div class="w-full md:w-80 flex-shrink-0 max-h-[60vh] md:max-h-[75vh] overflow-y-auto">
-                <p id="lightbox-description" class="text-sm leading-relaxed pr-4 whitespace-pre-wrap"></p>
+                <div id="lightbox-description" class="text-sm leading-relaxed pr-4 whitespace-pre-wrap flex flex-col gap-2"></div>
             </div>
         </div>
     </div>
@@ -141,14 +142,13 @@
 
         // Replace these URLs with your actual images
         const images = [
-            { id: 1, url: 'images/VENDING.jpg', title: 'Worthless Vending', description: 'Worthless Vending\n\n    1417x1417\n\n    11/27/2025' },
+            { id: 1, url: 'images/VENDING.jpg', title: 'Worthless Vending', description: '' },
             { id: 2, url: 'images/waifu.jpg', title: 'Waifu', description: '' },
             { id: 3, url: 'images/NYAN.jpg', title: 'Nyan', description: '' },
             { id: 4, url: 'images/acidtea.jpg', title: 'Acid Tea', description: '' },
             { id: 5, url: 'images/mirror.jpg', title: 'Mirror', description: '' },
             { id: 6, url: 'images/MONSTERBEAST_FINAL.jpg', title: 'Beast', description: '' },
             { id: 7, url: 'images/PEACLY.jpg', title: 'Peace', description: '' },
-            { id: 8, url: 'images/TRASHWORLD.jpg', title: 'My Trash World', description: 'My Trash World\n\n    1417x1417\n\n    01/07/2026' },
         ];
 
         // Render gallery
@@ -173,7 +173,17 @@
             const lightboxDescription = document.getElementById('lightbox-description');
             lightboxImage.src = url;
             lightboxImage.alt = title;
-            lightboxDescription.textContent = description || '';
+            
+            // Parse and display description in stacked format
+            if (description) {
+                const lines = description.split('\n').filter(line => line.trim());
+                lightboxDescription.innerHTML = lines.map(line => 
+                    `<div>${line.trim()}</div>`
+                ).join('');
+            } else {
+                lightboxDescription.innerHTML = '';
+            }
+            
             lightbox.classList.remove('hidden');
             setTimeout(() => lightbox.classList.add('show'), 10);
         }
