@@ -19,16 +19,22 @@
     <!-- Header -->
     <header class="fixed top-0 left-0 right-0 bg-white z-40">
         <div class="max-w-7xl mx-auto px-6 py-6">
-            <nav class="flex justify-start">
-                <div class="relative group">
-                    <button class="text-sm hover:opacity-60">Menu</button>
-                    <div class="absolute top-full left-0 mt-2 bg-white py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible">
-                        <a href="https://instagram.com/yourusername" target="_blank" class="block px-6 py-2 text-sm hover:opacity-60 whitespace-nowrap">Instagram</a>
-                    </div>
-                </div>
-            </nav>
+            <button onclick="toggleMenu()" class="text-sm hover:opacity-60">Menu</button>
         </div>
     </header>
+
+    <!-- Sliding Menu -->
+    <div id="menu" class="fixed top-0 left-0 h-full w-64 bg-white z-50 transform -translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="p-8">
+            <button onclick="toggleMenu()" class="mb-12 text-sm hover:opacity-60">Close</button>
+            <nav class="space-y-6">
+                <a href="https://www.instagram.com/w59n1/" target="_blank" class="block text-sm hover:opacity-60">Instagram</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-20 z-40 hidden" onclick="toggleMenu()"></div>
 
     <!-- Main Gallery -->
     <main class="px-6 py-24 max-w-7xl mx-auto">
@@ -51,6 +57,13 @@
     </div>
 
     <script>
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            const overlay = document.getElementById('overlay');
+            menu.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
         // Replace these URLs with your actual images
         const images = [
             { id: 1, url: 'images/VENDING.jpg', title: 'Worthless Vending' },
