@@ -22,32 +22,47 @@
         #gallery > div > div {
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        #menu {
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #overlay {
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #lightbox {
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #lightbox.show {
+            opacity: 1;
+        }
+        #lightbox-image {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
     </style>
 </head>
 <body class="bg-white">
     <!-- Header -->
     <header class="fixed top-0 left-0 right-0 bg-white z-40">
         <div class="px-6 py-6 flex justify-between items-center">
-            <button onclick="toggleMenu()" class="text-sm hover:opacity-60">Menu</button>
+            <button onclick="toggleMenu()" class="text-sm hover:opacity-60 transition-opacity duration-300">Menu</button>
             <div class="flex gap-4">
-                <button onclick="zoomOut()" class="text-lg hover:opacity-60 w-8 h-8 flex items-center justify-center">−</button>
-                <button onclick="zoomIn()" class="text-lg hover:opacity-60 w-8 h-8 flex items-center justify-center">+</button>
+                <button onclick="zoomOut()" class="text-lg hover:opacity-60 w-8 h-8 flex items-center justify-center transition-opacity duration-300">−</button>
+                <button onclick="zoomIn()" class="text-lg hover:opacity-60 w-8 h-8 flex items-center justify-center transition-opacity duration-300">+</button>
             </div>
         </div>
     </header>
 
     <!-- Sliding Menu -->
-    <div id="menu" class="fixed top-0 left-0 h-full w-64 md:w-80 bg-white z-50 transform -translate-x-full transition-transform duration-300 ease-in-out">
+    <div id="menu" class="fixed top-0 left-0 h-full w-64 md:w-80 bg-white z-50 transform -translate-x-full">
         <div class="p-6 md:p-8">
-            <button onclick="toggleMenu()" class="mb-8 md:mb-12 text-sm hover:opacity-60">Close</button>
+            <button onclick="toggleMenu()" class="mb-8 md:mb-12 text-sm hover:opacity-60 transition-opacity duration-300">Close</button>
             <nav class="space-y-4 md:space-y-6">
-                <a href="https://www.instagram.com/w59n1/" target="_blank" class="block text-sm hover:opacity-60">Instagram</a>
+                <a href="https://www.instagram.com/w59n1/" target="_blank" class="block text-sm hover:opacity-60 transition-opacity duration-300">Instagram</a>
             </nav>
         </div>
     </div>
 
     <!-- Overlay -->
-    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-20 z-40 hidden" onclick="toggleMenu()"></div>
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-20 z-40 hidden opacity-0" onclick="toggleMenu()"></div>
 
     <!-- Main Gallery -->
     <main class="px-4 py-20 mx-auto">
@@ -57,27 +72,40 @@
     </main>
 
     <!-- Lightbox -->
-    <div id="lightbox" class="fixed inset-0 bg-white z-50 flex items-center justify-center p-4 md:p-6 hidden" onclick="closeLightbox()">
-        <button class="absolute top-4 right-4 md:top-6 md:right-6 p-2 hover:opacity-60" onclick="closeLightbox()" aria-label="Close">
+    <div id="lightbox" class="fixed inset-0 bg-white z-50 flex items-center justify-center p-4 md:p-6 hidden opacity-0" onclick="closeLightbox()">
+        <button class="absolute top-4 right-4 md:top-6 md:right-6 p-2 hover:opacity-60 transition-opacity duration-300" onclick="closeLightbox()" aria-label="Close">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
         </button>
         
-        <div class="max-w-5xl w-full flex flex-col items-center">
-            <img id="lightbox-image" src="" alt="" class="max-h-[85vh] md:max-h-[80vh] w-auto object-contain cursor-pointer" onclick="closeLightbox()">
+        <div class="max-w-7xl w-full flex flex-col md:flex-row items-center gap-8" onclick="event.stopPropagation()">
+            <div class="flex-1 flex items-center justify-center">
+                <img id="lightbox-image" src="" alt="" class="max-h-[70vh] md:max-h-[80vh] w-auto object-contain cursor-pointer" onclick="closeLightbox()">
+            </div>
+            <div class="w-full md:w-80 flex-shrink-0">
+                <p id="lightbox-description" class="text-sm leading-relaxed"></p>
+            </div>
         </div>
     </div>
 
     <script>
-        let zoomLevel = 2; // Start at 2 columns (mobile), 4 (desktop)
-        const zoomLevels = [1, 2, 3, 4, 6, 8];
+        let zoomLevel = 3; // Start at 3 columns
+        const zoomLevels = [1, 2, 3, 4];
 
         function toggleMenu() {
             const menu = document.getElementById('menu');
             const overlay = document.getElementById('overlay');
+            
+            if (menu.classList.contains('-translate-x-full')) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.style.opacity = '1', 10);
+            } else {
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.classList.add('hidden'), 500);
+            }
+            
             menu.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
         }
 
         function zoomIn() {
@@ -102,9 +130,7 @@
                 1: 'grid-cols-1',
                 2: 'grid-cols-2',
                 3: 'grid-cols-3',
-                4: 'grid-cols-2 md:grid-cols-4',
-                6: 'grid-cols-3 md:grid-cols-6',
-                8: 'grid-cols-4 md:grid-cols-8'
+                4: 'grid-cols-4'
             };
             
             gallery.className = `grid gap-4 md:gap-8 ${gridClasses[zoomLevel]}`;
@@ -112,13 +138,13 @@
 
         // Replace these URLs with your actual images
         const images = [
-            { id: 1, url: 'images/VENDING.jpg', title: 'Worthless Vending' },
-            { id: 2, url: 'images/waifu.jpg', title: 'Waifu' },
-            { id: 3, url: 'images/NYAN.jpg', title: 'Nyan' },
-            { id: 4, url: 'images/acidtea.jpg', title: 'Acid Tea' },
-            { id: 5, url: 'images/mirror.jpg', title: 'Mirror' },
-            { id: 6, url: 'images/MONSTERBEAST_FINAL.jpg', title: 'Beast' },
-            { id: 7, url: 'images/PEACLY.jpg', title: 'Peace' },
+            { id: 1, url: 'images/VENDING.jpg', title: 'Worthless Vending', description: '' },
+            { id: 2, url: 'images/waifu.jpg', title: 'Waifu', description: '' },
+            { id: 3, url: 'images/NYAN.jpg', title: 'Nyan', description: '' },
+            { id: 4, url: 'images/acidtea.jpg', title: 'Acid Tea', description: '' },
+            { id: 5, url: 'images/mirror.jpg', title: 'Mirror', description: '' },
+            { id: 6, url: 'images/MONSTERBEAST_FINAL.jpg', title: 'Beast', description: '' },
+            { id: 7, url: 'images/PEACLY.jpg', title: 'Peace', description: '' },
         ];
 
         // Render gallery
@@ -133,21 +159,25 @@
                     <img src="${image.url}" alt="${image.title}" class="w-full h-full object-cover">
                 </div>
             `;
-            div.onclick = () => openLightbox(image.url, image.title);
+            div.onclick = () => openLightbox(image.url, image.title, image.description);
             gallery.appendChild(div);
         });
 
-        function openLightbox(url, title) {
+        function openLightbox(url, title, description) {
             const lightbox = document.getElementById('lightbox');
             const lightboxImage = document.getElementById('lightbox-image');
+            const lightboxDescription = document.getElementById('lightbox-description');
             lightboxImage.src = url;
             lightboxImage.alt = title;
+            lightboxDescription.textContent = description || '';
             lightbox.classList.remove('hidden');
+            setTimeout(() => lightbox.classList.add('show'), 10);
         }
 
         function closeLightbox() {
             const lightbox = document.getElementById('lightbox');
-            lightbox.classList.add('hidden');
+            lightbox.classList.remove('show');
+            setTimeout(() => lightbox.classList.add('hidden'), 400);
         }
     </script>
 </body>
