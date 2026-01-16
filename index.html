@@ -18,16 +18,16 @@
 <body class="bg-white">
     <!-- Header -->
     <header class="fixed top-0 left-0 right-0 bg-white z-40">
-        <div class="max-w-7xl mx-auto px-6 py-6">
+        <div class="px-6 py-6">
             <button onclick="toggleMenu()" class="text-sm hover:opacity-60">Menu</button>
         </div>
     </header>
 
     <!-- Sliding Menu -->
-    <div id="menu" class="fixed top-0 left-0 h-full w-64 bg-white z-50 transform -translate-x-full transition-transform duration-300 ease-in-out">
-        <div class="p-8">
-            <button onclick="toggleMenu()" class="mb-12 text-sm hover:opacity-60">Close</button>
-            <nav class="space-y-6">
+    <div id="menu" class="fixed top-0 left-0 h-full w-64 md:w-80 bg-white z-50 transform -translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="p-6 md:p-8">
+            <button onclick="toggleMenu()" class="mb-8 md:mb-12 text-sm hover:opacity-60">Close</button>
+            <nav class="space-y-4 md:space-y-6">
                 <a href="https://www.instagram.com/w59n1/" target="_blank" class="block text-sm hover:opacity-60">Instagram</a>
             </nav>
         </div>
@@ -37,22 +37,22 @@
     <div id="overlay" class="fixed inset-0 bg-black bg-opacity-20 z-40 hidden" onclick="toggleMenu()"></div>
 
     <!-- Main Gallery -->
-    <main class="px-6 py-24 max-w-7xl mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="gallery">
+    <main class="px-4 py-20 mx-auto">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8" id="gallery">
             <!-- Images will be inserted here by JavaScript -->
         </div>
     </main>
 
     <!-- Lightbox -->
-    <div id="lightbox" class="fixed inset-0 bg-white z-50 flex items-center justify-center p-6 hidden" onclick="closeLightbox()">
-        <button class="absolute top-6 right-6 p-2 hover:opacity-60" onclick="closeLightbox()" aria-label="Close">
+    <div id="lightbox" class="fixed inset-0 bg-white z-50 flex items-center justify-center p-4 md:p-6 hidden" onclick="closeLightbox()">
+        <button class="absolute top-4 right-4 md:top-6 md:right-6 p-2 hover:opacity-60" onclick="closeLightbox()" aria-label="Close">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
         </button>
         
         <div class="max-w-5xl w-full flex flex-col items-center">
-            <img id="lightbox-image" src="" alt="" class="max-h-[80vh] w-auto object-contain cursor-pointer" onclick="closeLightbox()">
+            <img id="lightbox-image" src="" alt="" class="max-h-[85vh] md:max-h-[80vh] w-auto object-contain cursor-pointer" onclick="closeLightbox()">
         </div>
     </div>
 
