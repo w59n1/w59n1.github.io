@@ -1,2 +1,3 @@
-# w59n1.github.io
-website 
+# w59n1.com
+website stuff
+started 1/16/2026
