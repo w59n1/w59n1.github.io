@@ -73,6 +73,7 @@
             <div class="flex gap-4 md:gap-8 text-xs md:text-sm">
                 <button onclick="showSection('gallery')" id="tab-gallery" class="hover:opacity-60 transition-opacity duration-300 tab-active">Gallery</button>
                 <button onclick="showSection('weblog')" id="tab-weblog" class="hover:opacity-60 transition-opacity duration-300">Weblog</button>
+                <button onclick="showSection('shop')" id="tab-shop" class="hover:opacity-60 transition-opacity duration-300">Shop</button>
             </div>
             <a href="#" onclick="showSection('gallery'); return false;" class="absolute left-1/2 transform -translate-x-1/2 text-xs md:text-sm hover:opacity-60 transition-opacity duration-300">w59n1.com</a>
             <button onclick="showSection('contact')" id="tab-contact" class="text-xs md:text-sm hover:opacity-60 transition-opacity duration-300">Contact</button>
@@ -126,6 +127,18 @@
         </main>
     </section>
 
+    <!-- Shop Section -->
+    <section id="shop-section" class="section">
+        <main class="px-4 md:px-8 pt-28 md:pt-32 pb-12">
+            <div class="max-w-4xl">
+                <div class="text-sm mb-8">Coming soon.</div>
+                <div id="shop-items" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                    <!-- Products will be dynamically added here -->
+                </div>
+            </div>
+        </main>
+    </section>
+
     <!-- Lightbox -->
     <div id="lightbox" class="fixed inset-0 bg-gray-50 z-50 flex items-center justify-center p-4 md:p-6 hidden opacity-0" onclick="closeLightbox()">
         <button class="absolute top-4 right-4 md:top-6 md:right-6 p-2 hover:opacity-60 transition-opacity duration-300" onclick="closeLightbox()" aria-label="Close">
@@ -148,6 +161,7 @@
         const MAINTENANCE = {
             gallery: false,
             weblog: false,
+            shop: false,
             contact: false
         };
         const MAINTENANCE_PASSWORD = "w59n1";
@@ -332,6 +346,41 @@
             lightbox.classList.remove('show');
             setTimeout(() => lightbox.classList.add('hidden'), 400);
         }
+
+        // Shop products array - ready for future ecommerce integration
+        const shopProducts = [
+            // Example product structure for future use:
+            // {
+            //     id: 1,
+            //     name: 'Print Name',
+            //     price: 50.00,
+            //     image: 'images/product1.jpg',
+            //     description: 'Limited edition print',
+            //     inStock: true,
+            //     shopifyId: '', // For Shopify integration
+            //     stripeId: ''   // For Stripe integration
+            // }
+        ];
+
+        // Render shop products
+        const shopContainer = document.getElementById('shop-items');
+        shopProducts.forEach(product => {
+            const productDiv = document.createElement('div');
+            productDiv.className = 'group cursor-pointer';
+            productDiv.innerHTML = `
+                <div class="aspect-square overflow-hidden bg-gray-50 mb-3">
+                    <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:opacity-90 transition-opacity duration-300">
+                </div>
+                <div class="text-sm mb-1">${product.name}</div>
+                <div class="text-sm text-gray-600">$${product.price.toFixed(2)}</div>
+                ${product.inStock ? '' : '<div class="text-sm text-gray-400 mt-1">Sold Out</div>'}
+            `;
+            productDiv.onclick = () => {
+                // Future: Open product detail modal or redirect to checkout
+                alert(`Product details for: ${product.name}\n\nThis will be integrated with ecommerce platform.`);
+            };
+            shopContainer.appendChild(productDiv);
+        });
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
