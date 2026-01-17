@@ -13,13 +13,13 @@
         .aspect-square {
             aspect-ratio: 1 / 1;
         }
-        #gallery {
+        #gallery-grid {
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        #gallery > div {
+        #gallery-grid > div {
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        #gallery > div > div {
+        #gallery-grid > div > div {
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
         #menu {
@@ -37,17 +37,31 @@
         #lightbox-image {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        .tab-active {
+            border-bottom: 2px solid black;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
     </style>
 </head>
 <body class="bg-white">
     <!-- Header -->
     <header class="fixed top-0 left-0 right-0 bg-white z-40">
-        <div class="px-6 py-6 flex justify-between items-center">
-            <button onclick="toggleMenu()" class="text-sm hover:opacity-60 transition-opacity duration-300">Menu</button>
-            <div class="flex gap-4">
-                <button onclick="zoomOut()" class="text-lg hover:opacity-60 w-8 h-8 flex items-center justify-center transition-opacity duration-300">−</button>
-                <button onclick="zoomIn()" class="text-lg hover:opacity-60 w-8 h-8 flex items-center justify-center transition-opacity duration-300">+</button>
+        <div class="px-6 py-4 flex justify-between items-center">
+            <div class="flex gap-8">
+                <button onclick="showSection('gallery')" id="tab-gallery" class="text-sm hover:opacity-60 transition-opacity duration-300 tab-active">Gallery</button>
+                <button onclick="showSection('weblog')" id="tab-weblog" class="text-sm hover:opacity-60 transition-opacity duration-300">Weblog</button>
             </div>
+            <div class="absolute left-1/2 transform -translate-x-1/2 text-sm">w59n1.com</div>
+            <button onclick="showSection('contact')" id="tab-contact" class="text-sm hover:opacity-60 transition-opacity duration-300">Contact</button>
+        </div>
+        <div id="gallery-controls" class="px-6 pb-4 flex justify-end gap-4">
+            <button onclick="zoomOut()" class="text-lg hover:opacity-60 w-8 h-8 flex items-center justify-center transition-opacity duration-300">−</button>
+            <button onclick="zoomIn()" class="text-lg hover:opacity-60 w-8 h-8 flex items-center justify-center transition-opacity duration-300">+</button>
         </div>
     </header>
 
@@ -64,12 +78,39 @@
     <!-- Overlay -->
     <div id="overlay" class="fixed inset-0 bg-black bg-opacity-20 z-40 hidden opacity-0" onclick="toggleMenu()"></div>
 
-    <!-- Main Gallery -->
-    <main class="px-4 pt-24 pb-12 mx-auto">
-        <div id="gallery" class="grid gap-4 md:gap-8"></div>
-            <!-- Images will be inserted here by JavaScript -->
-        </div>
-    </main>
+    <!-- Contact Section -->
+    <section id="contact-section" class="section">
+        <main class="px-4 md:px-8 pt-32 pb-12 mx-auto max-w-4xl">
+            <div class="space-y-6">
+                <div>
+                    <div class="text-sm mb-2">Instagram</div>
+                    <a href="https://www.instagram.com/w59n1/" target="_blank" class="text-sm hover:opacity-60 transition-opacity">@w59n1</a>
+                </div>
+                <div>
+                    <div class="text-sm mb-2">Email</div>
+                    <a href="mailto:contact@w59n1.com" class="text-sm hover:opacity-60 transition-opacity">contact@w59n1.com</a>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery-section" class="section active">
+        <main class="px-4 pt-32 pb-12 mx-auto">
+            <div id="gallery-grid" class="grid gap-4 md:gap-8">
+                <!-- Images will be inserted here by JavaScript -->
+            </div>
+        </main>
+    </section>
+
+    <!-- Weblog Section -->
+    <section id="weblog-section" class="section">
+        <main class="px-4 md:px-8 pt-32 pb-12 mx-auto max-w-4xl">
+            <div id="blog-posts" class="space-y-12">
+                <!-- Blog posts will be inserted here -->
+            </div>
+        </main>
+    </section>
 
     <!-- Lightbox -->
     <div id="lightbox" class="fixed inset-0 bg-gray-50 z-50 flex items-center justify-center p-4 md:p-6 hidden opacity-0" onclick="closeLightbox()">
@@ -90,8 +131,43 @@
     </div>
 
     <script>
-        let zoomLevel = 4; // Start at 4 columns
+        // MAINTENANCE MODE - Set individual pages to true/false
+        const MAINTENANCE = {
+            gallery: false,  // Set to true to lock Gallery
+            weblog: true,   // Set to true to lock Weblog
+            contact: false   // Set to true to lock Contact
+        };
+        const MAINTENANCE_PASSWORD = "passlock"; // Change this to your password
+
+        let zoomLevel = 4;
         const zoomLevels = [1, 2, 3, 4];
+
+        function showSection(section) {
+            // Check if section is under maintenance
+            if (MAINTENANCE[section]) {
+                const entered = prompt(`${section.charAt(0).toUpperCase() + section.slice(1)} is under maintenance. Enter password:`);
+                if (entered !== MAINTENANCE_PASSWORD) {
+                    alert('Access denied. This page is temporarily unavailable.');
+                    return;
+                }
+            }
+            
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('[id^="tab-"]').forEach(t => t.classList.remove('tab-active'));
+            
+            // Show selected section
+            document.getElementById(section + '-section').classList.add('active');
+            document.getElementById('tab-' + section).classList.add('tab-active');
+            
+            // Show/hide gallery controls
+            const controls = document.getElementById('gallery-controls');
+            if (section === 'gallery') {
+                controls.style.display = 'flex';
+            } else {
+                controls.style.display = 'none';
+            }
+        }
 
         function toggleMenu() {
             const menu = document.getElementById('menu');
@@ -125,7 +201,7 @@
         }
 
         function updateGalleryGrid() {
-            const gallery = document.getElementById('gallery');
+            const gallery = document.getElementById('gallery-grid');
             const gridClasses = {
                 1: 'grid-cols-1',
                 2: 'grid-cols-2',
@@ -136,20 +212,39 @@
             gallery.className = `grid gap-4 md:gap-8 ${gridClasses[zoomLevel]}`;
         }
 
-        // Replace these URLs with your actual images
+        // Gallery Images
         const images = [
-            { id: 1, url: 'images/VENDING.jpg', title: 'Worthless Vending', description: '    Worthless Vending\n\n    1417x1417\n\n    11/27/2025' },
+            { id: 1, url: 'images/VENDING.jpg', title: 'Worthless Vending', description: 'Worthless Vending\n1417x1417\n11/27/2025' },
             { id: 2, url: 'images/waifu.jpg', title: 'Waifu', description: '' },
             { id: 3, url: 'images/NYAN.jpg', title: 'Nyan', description: '' },
             { id: 4, url: 'images/acidtea.jpg', title: 'Acid Tea', description: '' },
             { id: 5, url: 'images/mirror.jpg', title: 'Mirror', description: '' },
             { id: 6, url: 'images/MONSTERBEAST_FINAL.jpg', title: 'Beast', description: '' },
             { id: 7, url: 'images/PEACLY.jpg', title: 'Peace', description: '' },
-            { id: 8, url: 'images/TRASHWORLD.jpg', title: 'My Trash World', description: '    My Trash World\n\n    1417x1417\n\n    01/07/2026' },
+            { id: 8, url: 'images/TRASHWORLD.jpg', title: 'My Trash World', description: 'My Trash World\n1417x1417\n01/07/2026' },
+        ];
+
+        // Blog Posts - Add your blog posts here
+        const blogPosts = [
+            {
+                date: '01/16/2026',
+                title: 'First Post',
+                content: 'This is my first blog post. Write whatever you want here.',
+                media: [
+                    { type: 'image', url: 'images/VENDING.jpg' },
+                    { type: 'video', url: 'videos/myvideo.mp4' }
+                ]
+            },
+            {
+                date: '01/10/2026',
+                title: 'Second Post',
+                content: 'Another blog post with more thoughts and ideas.',
+                media: []
+            }
         ];
 
         // Render gallery
-        const gallery = document.getElementById('gallery');
+        const gallery = document.getElementById('gallery-grid');
         updateGalleryGrid();
         
         images.forEach(image => {
@@ -164,6 +259,34 @@
             gallery.appendChild(div);
         });
 
+        // Render blog posts
+        const blogContainer = document.getElementById('blog-posts');
+        blogPosts.forEach(post => {
+            const article = document.createElement('article');
+            article.className = 'pb-8';
+            
+            let mediaHTML = '';
+            if (post.media && post.media.length > 0) {
+                mediaHTML = '<div class="space-y-4 mt-4">';
+                post.media.forEach(item => {
+                    if (item.type === 'image') {
+                        mediaHTML += `<img src="${item.url}" alt="" class="w-full md:w-1/2 h-auto object-cover rounded">`;
+                    } else if (item.type === 'video') {
+                        mediaHTML += `<video controls class="w-full md:w-1/2 h-auto rounded"><source src="${item.url}" type="video/mp4"></video>`;
+                    }
+                });
+                mediaHTML += '</div>';
+            }
+            
+            article.innerHTML = `
+                <div class="text-sm text-black mb-4">${post.date}</div>
+                <h2 class="text-sm text-black font-normal mb-4">${post.title}</h2>
+                <div class="text-sm text-black leading-relaxed whitespace-pre-wrap">${post.content}</div>
+                ${mediaHTML}
+            `;
+            blogContainer.appendChild(article);
+        });
+
         function openLightbox(url, title, description) {
             const lightbox = document.getElementById('lightbox');
             const lightboxImage = document.getElementById('lightbox-image');
@@ -171,7 +294,6 @@
             lightboxImage.src = url;
             lightboxImage.alt = title;
             
-            // Parse and display description in stacked format
             if (description) {
                 const lines = description.split('\n').filter(line => line.trim());
                 lightboxDescription.innerHTML = lines.map(line => 
