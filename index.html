@@ -51,17 +51,17 @@
 <body class="bg-white">
     <!-- Header -->
     <header class="fixed top-0 left-0 right-0 bg-white z-40">
-        <div class="px-6 py-4 flex justify-between items-center">
-            <div class="flex gap-8">
-                <button onclick="showSection('gallery')" id="tab-gallery" class="text-sm hover:opacity-60 transition-opacity duration-300 tab-active">Gallery</button>
-                <button onclick="showSection('weblog')" id="tab-weblog" class="text-sm hover:opacity-60 transition-opacity duration-300">Weblog</button>
+        <div class="px-4 md:px-6 py-4 flex justify-between items-center">
+            <div class="flex gap-4 md:gap-8 text-xs md:text-sm">
+                <button onclick="showSection('gallery')" id="tab-gallery" class="hover:opacity-60 transition-opacity duration-300 tab-active">Gallery</button>
+                <button onclick="showSection('weblog')" id="tab-weblog" class="hover:opacity-60 transition-opacity duration-300">Weblog</button>
             </div>
-            <div class="absolute left-1/2 transform -translate-x-1/2 text-sm">w59n1.com</div>
-            <button onclick="showSection('contact')" id="tab-contact" class="text-sm hover:opacity-60 transition-opacity duration-300">Contact</button>
+            <div class="hidden md:block absolute left-1/2 transform -translate-x-1/2 text-sm">w59n1.com</div>
+            <button onclick="showSection('contact')" id="tab-contact" class="text-xs md:text-sm hover:opacity-60 transition-opacity duration-300">Contact</button>
         </div>
-        <div id="gallery-controls" class="px-6 pb-4 flex justify-end gap-4">
-            <button onclick="zoomOut()" class="text-lg hover:opacity-60 w-8 h-8 flex items-center justify-center transition-opacity duration-300">−</button>
-            <button onclick="zoomIn()" class="text-lg hover:opacity-60 w-8 h-8 flex items-center justify-center transition-opacity duration-300">+</button>
+        <div id="gallery-controls" class="px-4 md:px-6 pb-3 md:pb-4 flex justify-end gap-3 md:gap-4">
+            <button onclick="zoomOut()" class="text-base md:text-lg hover:opacity-60 w-7 h-7 md:w-8 md:h-8 flex items-center justify-center transition-opacity duration-300">−</button>
+            <button onclick="zoomIn()" class="text-base md:text-lg hover:opacity-60 w-7 h-7 md:w-8 md:h-8 flex items-center justify-center transition-opacity duration-300">+</button>
         </div>
     </header>
 
@@ -80,8 +80,8 @@
 
     <!-- Contact Section -->
     <section id="contact-section" class="section">
-        <main class="px-4 md:px-8 pt-32 pb-12 mx-auto max-w-4xl">
-            <div class="space-y-6">
+        <main class="px-4 md:px-8 pt-28 md:pt-32 pb-12">
+            <div class="space-y-6 max-w-4xl">
                 <div>
                     <div class="text-sm mb-2">Instagram</div>
                     <a href="https://www.instagram.com/w59n1/" target="_blank" class="text-sm hover:opacity-60 transition-opacity">@w59n1</a>
@@ -96,7 +96,7 @@
 
     <!-- Gallery Section -->
     <section id="gallery-section" class="section active">
-        <main class="px-4 pt-32 pb-12 mx-auto">
+        <main class="px-4 pt-28 md:pt-32 pb-12 mx-auto">
             <div id="gallery-grid" class="grid gap-4 md:gap-8">
                 <!-- Images will be inserted here by JavaScript -->
             </div>
@@ -105,8 +105,8 @@
 
     <!-- Weblog Section -->
     <section id="weblog-section" class="section">
-        <main class="px-4 md:px-8 pt-32 pb-12 mx-auto max-w-4xl">
-            <div id="blog-posts" class="space-y-12">
+        <main class="px-4 md:px-8 pt-28 md:pt-32 pb-12">
+            <div id="blog-posts" class="space-y-12 max-w-4xl">
                 <!-- Blog posts will be inserted here -->
             </div>
         </main>
@@ -137,7 +137,7 @@
             weblog: false,   // Set to true to lock Weblog
             contact: false   // Set to true to lock Contact
         };
-        const MAINTENANCE_PASSWORD = "passlock"; // Change this to your password
+        const MAINTENANCE_PASSWORD = "w59n1"; // Change this to your password
 
         let zoomLevel = 4;
         const zoomLevels = [1, 2, 3, 4];
@@ -151,6 +151,9 @@
                     return;
                 }
             }
+            
+            // Save current section to remember it on refresh
+            localStorage.setItem('currentSection', section);
             
             // Hide all sections
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -227,10 +230,10 @@
         // Blog Posts - Add your blog posts here
         const blogPosts = [
             {
-    date: '01/17/2026',
-    title: 'Website launch',
-    content: 'w59n1.com should be up and running. No issues so far. I will be adding a lot more features in the next few weeks.',
-    media: []
+                date: '01/17/2026',
+                title: 'Website launch',
+                content: 'w59n1.com should be up and running. No issues so far. I will be adding a lot more features in the next few weeks.',
+                media: []
             },
             {
                 date: '01/16/2026',
@@ -309,8 +312,14 @@
             lightbox.classList.remove('show');
             setTimeout(() => lightbox.classList.add('hidden'), 400);
         }
+
+        // Restore last viewed section on page load
+        window.addEventListener('load', function() {
+            const lastSection = localStorage.getItem('currentSection');
+            if (lastSection && lastSection !== 'gallery') {
+                showSection(lastSection);
+            }
+        });
     </script>
 </body>
 </html>
-
-
