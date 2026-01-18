@@ -87,6 +87,14 @@
         body {
             margin: 0;
             padding: 0;
+            transform: scaleX(1.2);
+            transform-origin: center;
+        }
+        /* Counter the body stretch for proper centering */
+        body > * {
+            width: calc(100% / 1.2);
+            margin-left: auto;
+            margin-right: auto;
         }
         .aspect-square {
             aspect-ratio: 1 / 1;
@@ -153,7 +161,7 @@
                 <button onclick="showSection('weblog')" id="tab-weblog" class="hover:opacity-60 transition-opacity duration-300" aria-label="View weblog">Weblog</button>
                 <button onclick="showSection('shop')" id="tab-shop" class="hover:opacity-60 transition-opacity duration-300" aria-label="View shop">Shop</button>
             </nav>
-            <a href="#" onclick="showSection('gallery'); return false;" class="absolute left-1/2 transform -translate-x-1/2 text-sm md:text-base hover:opacity-60 transition-opacity duration-300" style="transform: translateX(-50%) scaleX(1.15);" aria-label="w59n1 home">w59n1.com</a>
+            <a href="#" onclick="showSection('gallery'); return false;" class="absolute left-1/2 transform -translate-x-1/2 text-sm md:text-base hover:opacity-60 transition-opacity duration-300" style="transform: translateX(-50%) scaleX(1.8);" aria-label="w59n1 home">w59n1.com</a>
             <button onclick="showSection('contact')" id="tab-contact" class="text-sm md:text-base hover:opacity-60 transition-opacity duration-300" aria-label="Contact">Contact</button>
         </div>
         <div id="gallery-controls" class="px-4 md:px-6 pb-1 md:pb-2 flex justify-end gap-3 md:gap-4">
