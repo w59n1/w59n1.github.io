@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>w59n1.com</title>
+    
+    <!-- Enhanced SEO Meta Tags -->
+    <meta name="description" content="Art by w59n1">
+    <meta name="keywords" content="w59n1, digital art, contemporary art, artist portfolio, digital illustration, art prints, visual art, creative design, modern art, clothing, streetwear, internet art">
+    <meta name="author" content="w59n1">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow">
+    <link rel="canonical" href="https://w59n1.com/">
+    
+    <!-- favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://w59n1.com/">
+    <meta property="og:site_name" content="w59n1">
+    <meta property="og:title" content="w59n1">
+    <meta property="og:description" content="Digital art by w59n1.">
+    <meta property="og:image" content="https://w59n1.com/preview.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="w59n1 digital art">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@w59n1">
+    <meta name="twitter:creator" content="@w59n1">
+    <meta name="twitter:title" content="w59n1">
+    <meta name="twitter:description" content="Digital art by w59n1.">
+    <meta name="twitter:image" content="https://w59n1.com/preview.jpg">
+    <meta name="twitter:image:alt" content="w59n1 digital art">
+    
+    <!-- Structured Data (Schema.org) for Rich Snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "w59n1",
+      "url": "https://w59n1.com",
+      "image": "https://w59n1.com/preview.jpg",
+      "sameAs": [
+        "https://www.instagram.com/w59n1/"
+      ],
+      "jobTitle": "Digital Artist",
+      "description": "Contemporary digital artist creating unique visual art",
+      "knowsAbout": ["Digital Art", "Illustration", "Visual Design", "Contemporary Art", "Streetwear", "Internet Art"]
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "w59n1",
+      "url": "https://w59n1.com",
+      "description": "Digital art portfolio and gallery by w59n1"
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ImageGallery",
+      "name": "w59n1 Art Gallery",
+      "description": "Collection of digital artworks by w59n1",
+      "url": "https://w59n1.com",
+      "creator": {
+        "@type": "Person",
+        "name": "w59n1"
+      }
+    }
+    </script>
+    
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .aspect-square {
+            aspect-ratio: 1 / 1;
+        }
+        #gallery-grid {
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #gallery-grid > div {
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #gallery-grid > div > div {
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #menu {
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #overlay {
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #lightbox {
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #lightbox.show {
+            opacity: 1;
+        }
+        #lightbox-image {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tab-active {
+            border-bottom: 2px solid black;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        /* Image loading placeholder */
+        .image-loading {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        /* Blur-up effect for images */
+        img[data-src] {
+            filter: blur(10px);
+            transition: filter 0.3s;
+        }
+        img.loaded {
+            filter: blur(0);
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <!-- header -->
+    <header class="fixed top-0 left-0 right-0 bg-white z-40">
+        <div class="px-4 md:px-6 py-5 md:py-6 flex justify-between items-center">
+            <nav class="flex gap-6 md:gap-10 text-sm md:text-base" aria-label="Main navigation">
+                <button onclick="showSection('gallery')" id="tab-gallery" class="hover:opacity-60 transition-opacity duration-300 tab-active" aria-label="View gallery">Gallery</button>
+                <button onclick="showSection('weblog')" id="tab-weblog" class="hover:opacity-60 transition-opacity duration-300" aria-label="View weblog">Weblog</button>
+                <button onclick="showSection('shop')" id="tab-shop" class="hover:opacity-60 transition-opacity duration-300" aria-label="View shop">Shop</button>
+            </nav>
+            <a href="#" onclick="showSection('gallery'); return false;" class="absolute left-1/2 transform -translate-x-1/2 text-sm md:text-base hover:opacity-60 transition-opacity duration-300" aria-label="w59n1 home">w59n1.com</a>
+            <button onclick="showSection('contact')" id="tab-contact" class="text-sm md:text-base hover:opacity-60 transition-opacity duration-300" aria-label="Contact">Contact</button>
+        </div>
+        <div id="gallery-controls" class="px-4 md:px-6 pb-2 md:pb-3 flex justify-end gap-3 md:gap-4">
+            <button onclick="zoomOut()" class="text-base md:text-lg hover:opacity-60 w-7 h-7 md:w-8 md:h-8 flex items-center justify-center transition-opacity duration-300" aria-label="Zoom out gallery">−</button>
+            <button onclick="zoomIn()" class="text-base md:text-lg hover:opacity-60 w-7 h-7 md:w-8 md:h-8 flex items-center justify-center transition-opacity duration-300" aria-label="Zoom in gallery">+</button>
+        </div>
+    </header>
+
+    <!-- Sliding Menu -->
+    <div id="menu" class="fixed top-0 left-0 h-full w-64 md:w-80 bg-white z-50 transform -translate-x-full" role="dialog" aria-label="Side menu">
+        <div class="p-6 md:p-8">
+            <button onclick="toggleMenu()" class="mb-8 md:mb-12 text-sm hover:opacity-60 transition-opacity duration-300" aria-label="Close menu">Close</button>
+            <nav class="space-y-4 md:space-y-6" aria-label="Social media links">
+                <a href="https://www.instagram.com/w59n1/" target="_blank" rel="noopener noreferrer" class="block text-sm hover:opacity-60 transition-opacity duration-300">Instagram</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-20 z-40 hidden opacity-0" onclick="toggleMenu()" aria-hidden="true"></div>
+
+    <!-- contact -->
+    <section id="contact-section" class="section" aria-labelledby="contact-heading">
+        <main class="px-4 md:px-8 pt-20 md:pt-24 pb-16">
+            <h1 id="contact-heading" class="sr-only">Contact w59n1</h1>
+            <div class="space-y-6 max-w-4xl">
+                <div>
+                    <div class="text-sm mb-2">Instagram</div>
+                    <a href="https://www.instagram.com/w59n1/" target="_blank" rel="noopener noreferrer" class="text-sm hover:opacity-60 transition-opacity" aria-label="Visit w59n1 on Instagram">@w59n1</a>
+                </div>
+                <div>
+                    <div class="text-sm mb-2">Email</div>
+                    <a href="mailto:contact@w59n1.com" class="text-sm hover:opacity-60 transition-opacity" aria-label="Email w59n1">contact@w59n1.com</a>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <!-- gallery  -->
+    <section id="gallery-section" class="section active" aria-labelledby="gallery-heading">
+        <main class="px-4 pt-20 md:pt-24 pb-16 mx-auto">
+            <h1 id="gallery-heading" class="sr-only">Art Gallery by w59n1</h1>
+            <div id="gallery-grid" class="grid gap-4 md:gap-8" role="list"></div>
+        </main>
+    </section>
+
+    <!-- weblog  -->
+    <section id="weblog-section" class="section" aria-labelledby="weblog-heading">
+        <main class="px-4 md:px-8 pt-20 md:pt-24 pb-16">
+            <h1 id="weblog-heading" class="sr-only">w59n1 Weblog</h1>
+            <div id="blog-posts" class="space-y-12 max-w-4xl"></div>
+        </main>
+    </section>
+
+    <!-- shop -->
+    <section id="shop-section" class="section" aria-labelledby="shop-heading">
+        <main class="px-4 md:px-8 pt-20 md:pt-24 pb-16">
+            <h1 id="shop-heading" class="sr-only">w59n1 Shop</h1>
+            <div class="max-w-4xl">
+                <div class="text-sm mb-8">Coming soon.</div>
+                <div id="shop-items" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                    <!-- Products will be dynamically added here -->
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="fixed inset-0 bg-gray-50 z-50 flex items-center justify-center p-4 md:p-6 hidden opacity-0" onclick="closeLightbox()" role="dialog" aria-modal="true" aria-labelledby="lightbox-title">
+        <button class="absolute top-4 right-4 md:top-6 md:right-6 p-2 hover:opacity-60 transition-opacity duration-300" onclick="closeLightbox()" aria-label="Close lightbox">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+        
+        <div class="max-w-7xl w-full h-full flex flex-col md:flex-row items-center gap-8 py-4" onclick="event.stopPropagation()">
+            <div class="flex-1 flex items-center justify-center max-h-full overflow-hidden">
+                <img id="lightbox-image" src="" alt="" class="max-h-[60vh] md:max-h-[75vh] max-w-full h-auto w-auto object-contain cursor-pointer" onclick="closeLightbox()">
+            </div>
+            <div class="w-full md:w-80 flex-shrink-0 max-h-[60vh] md:max-h-[75vh] overflow-y-auto">
+                <h2 id="lightbox-title" class="sr-only">Artwork details</h2>
+                <div id="lightbox-description" class="text-sm leading-relaxed pr-4 whitespace-pre-wrap flex flex-col gap-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="fixed bottom-0 left-0 right-0 bg-white bg-opacity-90 backdrop-blur-sm z-30">
+        <div class="px-4 md:px-6 py-2 flex justify-between items-center">
+            <p class="text-xs text-gray-600">©</p>
+            <p class="text-xs text-gray-600">2026</p>
+            <p class="text-xs text-gray-600">w59n1.</p>
+            <p class="text-xs text-gray-600">All</p>
+            <p class="text-xs text-gray-600">rights</p>
+            <p class="text-xs text-gray-600">reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const MAINTENANCE = {
+            gallery: false,
+            weblog: false,
+            shop: false,
+            contact: false
+        };
+        const MAINTENANCE_PASSWORD = "w59n1";
+
+        let zoomLevel = 4;
+        const zoomLevels = [1, 2, 3, 4];
+
+        function showSection(section) {
+            if (MAINTENANCE[section]) {
+                const entered = prompt(`${section.charAt(0).toUpperCase() + section.slice(1)} is under maintenance. Enter password:`);
+                if (entered !== MAINTENANCE_PASSWORD) {
+                    alert('Access denied. This page is temporarily unavailable.');
+                    return;
+                }
+            }
+            
+            try {
+                localStorage.setItem('currentSection', section);
+            } catch (e) {
+                // Ignore localStorage errors (e.g., in file:// protocol or private browsing)
+            }
+            
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('[id^="tab-"]').forEach(t => t.classList.remove('tab-active'));
+            
+            document.getElementById(section + '-section').classList.add('active');
+            document.getElementById('tab-' + section).classList.add('tab-active');
+            
+            const controls = document.getElementById('gallery-controls');
+            if (section === 'gallery') {
+                controls.style.display = 'flex';
+            } else {
+                controls.style.display = 'none';
+            }
+
+            // Update page title based on section
+            const titles = {
+                gallery: 'Gallery - w59n1.com',
+                weblog: 'Weblog - w59n1.com',
+                shop: 'Shop - w59n1.com',
+                contact: 'Contact - w59n1.com'
+            };
+            document.title = titles[section] || 'w59n1.com';
+
+            // Lazy load images when switching to sections
+            if (section === 'weblog') {
+                lazyLoadBlogImages();
+            }
+
+            // Update URL without page reload (for better UX and analytics)
+            try {
+                if (history.pushState) {
+                    const url = section === 'gallery' ? '/' : `/#${section}`;
+                    history.pushState({section: section}, '', url);
+                }
+            } catch (e) {
+                // Ignore history errors (e.g., in file:// protocol)
+            }
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            const overlay = document.getElementById('overlay');
+            
+            if (menu.classList.contains('-translate-x-full')) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.style.opacity = '1', 10);
+            } else {
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.classList.add('hidden'), 500);
+            }
+            
+            menu.classList.toggle('-translate-x-full');
+        }
+
+        function zoomIn() {
+            const currentIndex = zoomLevels.indexOf(zoomLevel);
+            if (currentIndex > 0) {
+                zoomLevel = zoomLevels[currentIndex - 1];
+                updateGalleryGrid();
+            }
+        }
+
+        function zoomOut() {
+            const currentIndex = zoomLevels.indexOf(zoomLevel);
+            if (currentIndex < zoomLevels.length - 1) {
+                zoomLevel = zoomLevels[currentIndex + 1];
+                updateGalleryGrid();
+            }
+        }
+
+        function updateGalleryGrid() {
+            const gallery = document.getElementById('gallery-grid');
+            const gridClasses = {
+                1: 'grid-cols-1',
+                2: 'grid-cols-2',
+                3: 'grid-cols-3',
+                4: 'grid-cols-4'
+            };
+            
+            gallery.className = `grid gap-4 md:gap-8 ${gridClasses[zoomLevel]}`;
+        }
+
+        // Image data with SEO-friendly alt text
+        const images = [
+            { id: 1, url: 'images/NYAN.jpg', title: 'Nyan', description: 'Nyan\n1417x1417\n01/13/2026', alt: 'Nyan' },
+            { id: 2, url: 'images/makeitcount.jpg', title: 'Make it Count', description: 'Make it Count\n1417x1417\n01/10/2026', alt: 'Make it Count' },
+            { id: 3, url: 'images/TRASHWORLD.jpg', title: 'My Trash World', description: 'My Trash World\n1417x1417\n01/07/2026', alt: 'My Trash World' },
+            { id: 4, url: 'images/overtoolate.jpg', title: 'Over Too Late', description: 'Over Too Late\n1417x1417\n01/07/2026', alt: 'Over Too Late' },
+            { id: 5, url: 'images/vivalapsycho.jpg', title: 'Viva La Psycho', description: 'Viva La Psycho\n1417x1417\n01/03/2026', alt: 'Viva La Psycho' },
+            { id: 6, url: 'images/MONSTERBEAST_FINAL.jpg', title: 'Beast', description: 'Beast\nFeatured on @welcome.jpg Instagram page\n1417x1417\n12/24/2025', alt: 'Beast' },
+            { id: 7, url: 'images/HOLYMASK.jpg', title: 'Holy Mask', description: 'The Holy Mask\n1417x1417\n12/21/2025', alt: 'The Holy Mask' },
+            { id: 8, url: 'images/FREACKY.jpg', title: 'Freacky', description: 'Freacky\n1417x1417\n12/21/2025', alt: 'Freacky' },
+            { id: 9, url: 'images/FUCKTHIS.jpg', title: 'Fuck This', description: 'Fuck This\n1417x1417\n12/20/2025', alt: 'Fuck This' },
+            { id: 10, url: 'images/PEACLY.jpg', title: 'Peace', description: 'Peace\n1417x1417\n12/15/2025', alt: 'Peace' },
+            { id: 11, url: 'images/acidtea.jpg', title: 'Acid Tea', description: 'Acid Tea - Digital art', alt: 'Acid Tea' },
+            { id: 12, url: 'images/mirror.jpg', title: 'Mirror', description: 'Mirror - Digital artwork', alt: 'Mirror' },
+            { id: 13, url: 'images/waifu.jpg', title: 'Waifu', description: 'Waifu - Digital art', alt: 'Waifu' },
+            { id: 14, url: 'images/VENDING.jpg', title: 'Worthless Vending', description: 'Worthless Vending\n1417x1417\n11/27/2025', alt: 'Worthless Vending' }
+        ];
+
+        const blogPosts = [
+            {
+                date: '01/17/2026',
+                title: 'Physical Image 1',
+                content: 'Layered paper and prints, glue and different tape textures, coated with several layers of clear matte finish, fastened to cardboard backing for structure.',
+                media: [
+                    { type: 'image', url: 'images/art1front.png', alt: 'Physical artwork front' },
+                    { type: 'image', url: 'images/art1back.png', alt: 'Physical artwork back' },
+                ]
+            },
+            {
+                date: '01/17/2026',
+                title: 'Random stuff',
+                content: 'Prints/outline on paper',
+                media: [
+                    { type: 'image', url: 'images/PRINT1.png', alt: 'Art print 1' },
+                    { type: 'image', url: 'images/PRINT2.png', alt: 'Art print 2' },
+                    { type: 'image', url: 'images/PRINT3.png', alt: 'Art print 3' },
+                ]
+            },
+            {
+                date: '01/17/2026',
+                title: 'Website launch',
+                content: 'w59n1.com should be up and running. No issues so far. I will be adding a lot more features in the next few weeks.',
+                media: []
+            },
+            {
+                date: '01/16/2026',
+                title: 'testing',
+                content: 'Getting w59n1.com setup. Issues with DNS shit, should be up and easily accessible sooner than later.',
+                media: []
+            }
+        ];
+
+        // Intersection Observer for lazy loading
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    const src = img.getAttribute('data-src');
+                    if (src) {
+                        img.src = src;
+                        img.removeAttribute('data-src');
+                        img.onload = () => {
+                            img.classList.add('loaded');
+                            img.parentElement.classList.remove('image-loading');
+                        };
+                    }
+                    observer.unobserve(img);
+                }
+            });
+        }, {
+            rootMargin: '50px'
+        });
+
+        // Initialize gallery with lazy loading and SEO-friendly markup
+        const gallery = document.getElementById('gallery-grid');
+        updateGalleryGrid();
+        
+        images.forEach((image, index) => {
+            const div = document.createElement('div');
+            div.className = 'cursor-pointer';
+            div.setAttribute('role', 'listitem');
+            div.innerHTML = `
+                <div class="aspect-square overflow-hidden bg-gray-50 image-loading">
+                    <img data-src="${image.url}" 
+                         alt="${image.alt}" 
+                         title="${image.title}"
+                         class="w-full h-full object-cover"
+                         ${index < 4 ? '' : 'loading="lazy"'}>
+                </div>
+            `;
+            div.onclick = () => openLightbox(image.url, image.title, image.description, image.alt);
+            gallery.appendChild(div);
+            
+            const img = div.querySelector('img');
+            imageObserver.observe(img);
+        });
+
+        // Lazy load blog images
+        function lazyLoadBlogImages() {
+            const blogImages = document.querySelectorAll('#blog-posts img[data-src]');
+            blogImages.forEach(img => {
+                imageObserver.observe(img);
+            });
+        }
+
+        // Initialize blog posts with semantic HTML and SEO-friendly markup
+        const blogContainer = document.getElementById('blog-posts');
+        blogPosts.forEach(post => {
+            const article = document.createElement('article');
+            article.className = 'pb-8';
+            article.setAttribute('itemscope', '');
+            article.setAttribute('itemtype', 'https://schema.org/BlogPosting');
+            
+            let mediaHTML = '';
+            if (post.media && post.media.length > 0) {
+                mediaHTML = '<div class="space-y-4 mt-4">';
+                post.media.forEach(item => {
+                    if (item.type === 'image') {
+                        mediaHTML += `<div class="image-loading"><img data-src="${item.url}" alt="${item.alt || post.title}" class="w-full h-auto object-cover rounded" loading="lazy"></div>`;
+                    } else if (item.type === 'video') {
+                        mediaHTML += `<video controls class="w-full h-auto rounded" preload="metadata"><source src="${item.url}" type="video/mp4"></video>`;
+                    }
+                });
+                mediaHTML += '</div>';
+            }
+            
+            article.innerHTML = `
+                <time datetime="${post.date}" class="text-sm text-black mb-4 block" itemprop="datePublished">${post.date}</time>
+                <h2 class="text-sm text-black font-normal mb-4" itemprop="headline">${post.title}</h2>
+                <div class="text-sm text-black leading-relaxed whitespace-pre-wrap" itemprop="articleBody">${post.content}</div>
+                ${mediaHTML}
+            `;
+            blogContainer.appendChild(article);
+        });
+
+        function openLightbox(url, title, description, alt) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImage = document.getElementById('lightbox-image');
+            const lightboxDescription = document.getElementById('lightbox-description');
+            lightboxImage.src = url;
+            lightboxImage.alt = alt || title;
+            
+            if (description) {
+                const lines = description.split('\n').filter(line => line.trim());
+                lightboxDescription.innerHTML = lines.map(line => 
+                    `<div>${line.trim()}</div>`
+                ).join('');
+            } else {
+                lightboxDescription.innerHTML = '';
+            }
+            
+            lightbox.classList.remove('hidden');
+            setTimeout(() => lightbox.classList.add('show'), 10);
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('show');
+            setTimeout(() => lightbox.classList.add('hidden'), 400);
+        }
+
+        // Shop products array
+        const shopProducts = [];
+
+        // Render shop products
+        const shopContainer = document.getElementById('shop-items');
+        shopProducts.forEach(product => {
+            const productDiv = document.createElement('div');
+            productDiv.className = 'group cursor-pointer';
+            productDiv.setAttribute('itemscope', '');
+            productDiv.setAttribute('itemtype', 'https://schema.org/Product');
+            productDiv.innerHTML = `
+                <div class="aspect-square overflow-hidden bg-gray-50 mb-3 image-loading">
+                    <img data-src="${product.image}" 
+                         alt="${product.name}" 
+                         itemprop="image"
+                         class="w-full h-full object-cover group-hover:opacity-90 transition-opacity duration-300"
+                         loading="lazy">
+                </div>
+                <div class="text-sm mb-1" itemprop="name">${product.name}</div>
+                <div class="text-sm text-gray-600" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                    <span itemprop="price">$${product.price.toFixed(2)}</span>
+                    <meta itemprop="priceCurrency" content="USD">
+                </div>
+                ${product.inStock ? '' : '<div class="text-sm text-gray-400 mt-1">Sold Out</div>'}
+            `;
+            productDiv.onclick = () => {
+                alert(`Product details for: ${product.name}\n\nThis will be integrated with ecommerce platform.`);
+            };
+            shopContainer.appendChild(productDiv);
+            
+            const img = productDiv.querySelector('img');
+            if (img) {
+                imageObserver.observe(img);
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            const lightbox = document.getElementById('lightbox');
+            
+            if (e.key === 'Escape' && !lightbox.classList.contains('hidden')) {
+                closeLightbox();
+            }
+        });
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', function(event) {
+            if (event.state && event.state.section) {
+                showSection(event.state.section);
+            } else {
+                const hash = window.location.hash.replace('#', '');
+                if (hash && ['gallery', 'weblog', 'shop', 'contact'].includes(hash)) {
+                    showSection(hash);
+                } else {
+                    showSection('gallery');
+                }
+            }
+        });
+
+        // Load last viewed section or hash on page load
+        window.addEventListener('load', function() {
+            const hash = window.location.hash.replace('#', '');
+            if (hash && ['gallery', 'weblog', 'shop', 'contact'].includes(hash)) {
+                showSection(hash);
+            } else {
+                try {
+                    const lastSection = localStorage.getItem('currentSection');
+                    if (lastSection && lastSection !== 'gallery') {
+                        showSection(lastSection);
+                    }
+                } catch (e) {
+                    // Ignore localStorage errors
+                }
+            }
+        });
+
+        // Preload critical images
+        window.addEventListener('load', function() {
+            const firstImages = Array.from(gallery.querySelectorAll('img')).slice(0, 4);
+            firstImages.forEach(img => {
+                const src = img.getAttribute('data-src');
+                if (src) {
+                    img.src = src;
+                    img.removeAttribute('data-src');
+                    img.classList.add('loaded');
+                    img.parentElement.classList.remove('image-loading');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
