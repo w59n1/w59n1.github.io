@@ -147,16 +147,16 @@
 <body class="bg-white">
     <!-- header -->
     <header class="fixed top-0 left-0 right-0 bg-white z-40">
-        <div class="px-4 md:px-6 py-5 md:py-6 flex justify-between items-center">
+        <div class="px-4 md:px-6 py-3 md:py-4 flex justify-between items-center">
             <nav class="flex gap-6 md:gap-10 text-sm md:text-base" aria-label="Main navigation">
                 <button onclick="showSection('gallery')" id="tab-gallery" class="hover:opacity-60 transition-opacity duration-300 tab-active" aria-label="View gallery">Gallery</button>
                 <button onclick="showSection('weblog')" id="tab-weblog" class="hover:opacity-60 transition-opacity duration-300" aria-label="View weblog">Weblog</button>
                 <button onclick="showSection('shop')" id="tab-shop" class="hover:opacity-60 transition-opacity duration-300" aria-label="View shop">Shop</button>
             </nav>
-            <a href="#" onclick="showSection('gallery'); return false;" class="absolute left-1/2 transform -translate-x-1/2 text-sm md:text-base hover:opacity-60 transition-opacity duration-300" aria-label="w59n1 home">w59n1.com</a>
+            <a href="#" onclick="showSection('gallery'); return false;" class="absolute left-1/2 transform -translate-x-1/2 text-sm md:text-base hover:opacity-60 transition-opacity duration-300" style="transform: translateX(-50%) scaleX(1.15);" aria-label="w59n1 home">w59n1.com</a>
             <button onclick="showSection('contact')" id="tab-contact" class="text-sm md:text-base hover:opacity-60 transition-opacity duration-300" aria-label="Contact">Contact</button>
         </div>
-        <div id="gallery-controls" class="px-4 md:px-6 pb-2 md:pb-3 flex justify-end gap-3 md:gap-4">
+        <div id="gallery-controls" class="px-4 md:px-6 pb-1 md:pb-2 flex justify-end gap-3 md:gap-4">
             <button onclick="zoomOut()" class="text-base md:text-lg hover:opacity-60 w-7 h-7 md:w-8 md:h-8 flex items-center justify-center transition-opacity duration-300" aria-label="Zoom out gallery">−</button>
             <button onclick="zoomIn()" class="text-base md:text-lg hover:opacity-60 w-7 h-7 md:w-8 md:h-8 flex items-center justify-center transition-opacity duration-300" aria-label="Zoom in gallery">+</button>
         </div>
@@ -177,7 +177,7 @@
 
     <!-- contact -->
     <section id="contact-section" class="section" aria-labelledby="contact-heading">
-        <main class="px-4 md:px-8 pt-16 md:pt-20 pb-12">
+        <main class="px-4 md:px-8 pt-12 md:pt-14 pb-12">
             <h1 id="contact-heading" class="sr-only">Contact w59n1</h1>
             <div class="space-y-6 max-w-4xl">
                 <div>
@@ -194,7 +194,7 @@
 
     <!-- gallery  -->
     <section id="gallery-section" class="section active" aria-labelledby="gallery-heading">
-        <main class="px-4 pt-16 md:pt-20 pb-12 mx-auto">
+        <main class="px-4 pt-12 md:pt-14 pb-12 mx-auto">
             <h1 id="gallery-heading" class="sr-only">Art Gallery by w59n1</h1>
             <div id="gallery-grid" class="grid gap-4 md:gap-8" role="list"></div>
         </main>
@@ -202,7 +202,7 @@
 
     <!-- weblog  -->
     <section id="weblog-section" class="section" aria-labelledby="weblog-heading">
-        <main class="px-4 md:px-8 pt-16 md:pt-20 pb-12">
+        <main class="px-4 md:px-8 pt-12 md:pt-14 pb-12">
             <h1 id="weblog-heading" class="sr-only">w59n1 Weblog</h1>
             <div id="blog-posts" class="space-y-12 max-w-4xl"></div>
         </main>
@@ -210,7 +210,7 @@
 
     <!-- shop -->
     <section id="shop-section" class="section" aria-labelledby="shop-heading">
-        <main class="px-4 md:px-8 pt-16 md:pt-20 pb-12">
+        <main class="px-4 md:px-8 pt-12 md:pt-14 pb-12">
             <h1 id="shop-heading" class="sr-only">w59n1 Shop</h1>
             <div class="max-w-4xl">
                 <div class="text-sm mb-8">Coming soon.</div>
@@ -241,7 +241,7 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-white z-30 border-t border-gray-200">
+    <footer class="bg-white z-30">
         <div class="px-4 md:px-6 py-3 flex justify-between items-center">
             <p class="text-xs text-gray-600">©</p>
             <p class="text-xs text-gray-600">2026</p>
