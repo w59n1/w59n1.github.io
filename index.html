@@ -87,13 +87,48 @@
         body {
             margin: 0;
             padding: 0;
+            /* Aggressive fluid text stretch - super stretched at full width */
+            font-stretch: calc(120% + (80% * (100vw / 1920px)));
+            letter-spacing: calc(0.08em + (0.25em * (100vw / 1920px)));
+            transition: font-stretch 0.3s ease-out, letter-spacing 0.3s ease-out;
         }
-        /* Only apply stretch on desktop */
-        @media (min-width: 768px) {
-            body {
-                font-stretch: 115%;
-                letter-spacing: 0.05em;
-            }
+        /* Ensure images are never stretched */
+        img, picture, video, canvas, svg {
+            font-stretch: normal !important;
+            letter-spacing: normal !important;
+            transform: none !important;
+        }
+        /* Keep image containers square */
+        .aspect-square {
+            font-stretch: normal !important;
+        }
+        /* Extra aggressive stretch for weblog and gallery text content */
+        #blog-posts, #blog-posts * {
+            font-stretch: calc(140% + (100% * (100vw / 1920px))) !important;
+            letter-spacing: calc(0.1em + (0.3em * (100vw / 1920px))) !important;
+            transition: font-stretch 0.3s ease-out, letter-spacing 0.3s ease-out;
+        }
+        #gallery-section {
+            font-stretch: calc(140% + (100% * (100vw / 1920px))) !important;
+            letter-spacing: calc(0.1em + (0.3em * (100vw / 1920px))) !important;
+            transition: font-stretch 0.3s ease-out, letter-spacing 0.3s ease-out;
+        }
+        /* Reset stretch for images in these sections */
+        #blog-posts img, #gallery-grid img {
+            font-stretch: normal !important;
+            letter-spacing: normal !important;
+        }
+        /* Super aggressive fluid logo stretch */
+        .logo-stretch {
+            transform: translateX(-50%) scaleX(calc(2 + (3.5 * (100vw / 1920px))));
+            letter-spacing: calc(0.15em + (0.4em * (100vw / 1920px)));
+            transition: transform 0.3s ease-out, letter-spacing 0.3s ease-out;
+        }
+        /* Mobile logo stretch */
+        .logo-stretch-mobile {
+            transform: scaleX(calc(1.4 + (1.2 * (100vw / 768px))));
+            letter-spacing: calc(0.1em + (0.2em * (100vw / 768px)));
+            transition: transform 0.3s ease-out, letter-spacing 0.3s ease-out;
         }
         .aspect-square {
             aspect-ratio: 1 / 1;
@@ -165,7 +200,7 @@
                 <button onclick="showSection('contact')" id="tab-contact-mobile" class="text-[11px] hover:opacity-60 transition-opacity duration-300">Contact</button>
             </div>
             <div class="flex justify-center items-center mb-2">
-                <a href="#" onclick="showSection('gallery'); return false;" class="text-[10px] hover:opacity-60 transition-opacity duration-300" style="letter-spacing: 0.08em;">w59n1.com</a>
+                <a href="#" onclick="showSection('gallery'); return false;" class="text-[10px] hover:opacity-60 transition-opacity duration-300 logo-stretch-mobile">w59n1.com</a>
             </div>
             <div id="gallery-controls-mobile" class="flex justify-center gap-3">
                 <button onclick="zoomOut()" class="text-sm hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300">−</button>
@@ -180,7 +215,7 @@
                 <button onclick="showSection('weblog')" id="tab-weblog" class="hover:opacity-60 transition-opacity duration-300">Weblog</button>
                 <button onclick="showSection('shop')" id="tab-shop" class="hover:opacity-60 transition-opacity duration-300">Shop</button>
             </nav>
-            <a href="#" onclick="showSection('gallery'); return false;" class="absolute left-1/2 text-base hover:opacity-60 transition-opacity duration-300" style="transform: translateX(-50%) scaleX(2.5); letter-spacing: 0.2em;">w59n1.com</a>
+            <a href="#" onclick="showSection('gallery'); return false;" class="absolute left-1/2 text-base hover:opacity-60 transition-opacity duration-300 logo-stretch">w59n1.com</a>
             <div class="flex items-center gap-6">
                 <div id="gallery-controls" class="flex gap-3">
                     <button onclick="zoomOut()" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300">−</button>
@@ -405,7 +440,7 @@
             { id: 3, url: 'images/TRASHWORLD.jpg', title: 'My Trash World', description: 'My Trash World\n1417x1417\n01/07/2026', alt: 'My Trash World' },
             { id: 4, url: 'images/overtoolate.jpg', title: 'Over Too Late', description: 'Over Too Late\n1417x1417\n01/07/2026', alt: 'Over Too Late' },
             { id: 5, url: 'images/vivalapsycho.jpg', title: 'Viva La Psycho', description: 'Viva La Psycho\n1417x1417\n01/03/2026', alt: 'Viva La Psycho' },
-            { id: 6, url: 'images/MONSTERBEAST_FINAL.jpg', title: 'Beast', description: 'Beast\nFeatured on @welcome.jpeg Instagram page\n1417x1417\n12/24/2025', alt: 'Beast' },
+            { id: 6, url: 'images/MONSTERBEAST_FINAL.jpg', title: 'Beast', description: 'Beast\nFeatured on @welcome.jpg Instagram page\n1417x1417\n12/24/2025', alt: 'Beast' },
             { id: 7, url: 'images/HOLYMASK.jpg', title: 'Holy Mask', description: 'The Holy Mask\n1417x1417\n12/21/2025', alt: 'The Holy Mask' },
             { id: 8, url: 'images/FREACKY.jpg', title: 'Freacky', description: 'Freacky\n1417x1417\n12/21/2025', alt: 'Freacky' },
             { id: 9, url: 'images/FUCKTHIS.jpg', title: 'Fuck This', description: 'Fuck This\n1417x1417\n12/20/2025', alt: 'Fuck This' },
