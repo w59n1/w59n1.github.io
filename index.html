@@ -159,50 +159,24 @@
             pointer-events: auto;
         }
         /* Force footer to absolute bottom - always visible */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
         body {
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
         }
         .section {
-            flex: 1 1 auto;
-            display: flex;
-            flex-direction: column;
-        }
-        .section main {
-            flex: 1;
+            flex: 1 0 auto;
         }
         footer {
-            position: sticky;
-            bottom: 0;
+            flex-shrink: 0;
             z-index: 9999;
             background: white;
             width: 100%;
-            flex-shrink: 0;
             margin-top: auto;
-        }
-        /* Tutorial popup - translucent overlay over everything */
-        #unlock-tutorial {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(8px);
-            z-index: 100000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        #unlock-tutorial h2 {
-            font-stretch: 200%;
-            letter-spacing: 0.4em;
-            font-size: 3rem;
-            font-weight: normal;
-            text-transform: uppercase;
-            color: black;
         }
         #unlock-tutorial.hidden {
             display: none;
@@ -231,8 +205,7 @@
         }
         /* Enable browser native resize - no custom styling that causes lag */
         .gallery-unlocked #gallery-grid > div.positioned {
-            resize: both;
-            overflow: auto;
+            cursor: move;
         }
         /* Resize handle indicator */
         .gallery-unlocked #gallery-grid > div.positioned::after {
@@ -248,6 +221,10 @@
         /* When items have been positioned */
         #gallery-grid > div.positioned {
             position: absolute !important;
+            resize: both;
+            overflow: auto;
+            min-width: 50px;
+            min-height: 50px;
         }
         #gallery-grid > div.positioned .aspect-square {
             width: 100% !important;
@@ -257,33 +234,8 @@
         #gallery-grid > div.positioned img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
             pointer-events: none;
-        }
-        /* Tutorial popup */
-        #unlock-tutorial {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(5px);
-            padding: 3rem 4rem;
-            border-radius: 0;
-            z-index: 10000;
-            text-align: center;
-            font-stretch: 200%;
-            letter-spacing: 0.4em;
-        }
-        #unlock-tutorial h2 {
-            font-stretch: 200%;
-            letter-spacing: 0.4em;
-            font-size: 2rem;
-            font-weight: normal;
-            text-transform: uppercase;
-        }
-        #unlock-tutorial.hidden {
-            display: none;
         }
         .aspect-square {
             aspect-ratio: 1 / 1;
@@ -351,14 +303,14 @@
                     <button onclick="showSection('gallery')" id="tab-gallery-mobile" class="hover:opacity-60 transition-opacity duration-300 tab-active">Gallery</button>
                     <button onclick="showSection('weblog')" id="tab-weblog-mobile" class="hover:opacity-60 transition-opacity duration-300">Weblog</button>
                     <button onclick="showSection('shop')" id="tab-shop-mobile" class="hover:opacity-60 transition-opacity duration-300">Shop</button>
+                    <button onclick="showSection('contact')" id="tab-contact-mobile" class="text-[11px] hover:opacity-60 transition-opacity duration-300">Contact</button>
                 </nav>
-                <button onclick="showSection('contact')" id="tab-contact-mobile" class="text-[11px] hover:opacity-60 transition-opacity duration-300">Contact</button>
             </div>
             <div class="flex justify-center items-center mb-2">
                 <a href="#" onclick="showSection('gallery'); return false;" class="text-[10px] hover:opacity-60 transition-opacity duration-300 logo-stretch-mobile">w59n1.com</a>
             </div>
             <div id="gallery-controls-mobile" class="flex justify-center gap-2 items-center">
-                <button onclick="toggleLock()" id="lock-btn-mobile" class="text-sm hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300" title="Lock/Unlock">🔒</button>
+                <button onclick="toggleLock()" id="lock-btn-mobile" class="text-sm hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300" title="Lock/Unlock" style="z-index: 100001 !important; position: relative;">🔒</button>
                 <button onclick="resetPositions()" id="reset-btn-mobile" class="text-[10px] hover:opacity-60 px-1.5 h-5 flex items-center justify-center transition-opacity duration-300">Reset</button>
                 <button onclick="zoomOut()" class="text-sm hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300">−</button>
                 <button onclick="zoomIn()" class="text-sm hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300">+</button>
@@ -371,16 +323,14 @@
                 <button onclick="showSection('gallery')" id="tab-gallery" class="hover:opacity-60 transition-opacity duration-300 tab-active">Gallery</button>
                 <button onclick="showSection('weblog')" id="tab-weblog" class="hover:opacity-60 transition-opacity duration-300">Weblog</button>
                 <button onclick="showSection('shop')" id="tab-shop" class="hover:opacity-60 transition-opacity duration-300">Shop</button>
+                <button onclick="showSection('contact')" id="tab-contact" class="text-base hover:opacity-60 transition-opacity duration-300">Contact</button>
             </nav>
             <a href="#" onclick="showSection('gallery'); return false;" class="absolute left-1/2 text-base hover:opacity-60 transition-opacity duration-300 logo-stretch">w59n1.com</a>
-            <div class="flex items-center gap-6">
-                <div id="gallery-controls" class="flex gap-3 items-center">
-                    <button onclick="toggleLock()" id="lock-btn" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300" title="Lock/Unlock gallery">🔒</button>
-                    <button onclick="resetPositions()" id="reset-btn" class="text-sm hover:opacity-60 px-2 h-7 flex items-center justify-center transition-opacity duration-300" title="Reset positions">Reset</button>
-                    <button onclick="zoomOut()" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300">−</button>
-                    <button onclick="zoomIn()" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300">+</button>
-                </div>
-                <button onclick="showSection('contact')" id="tab-contact" class="text-base hover:opacity-60 transition-opacity duration-300">Contact</button>
+            <div id="gallery-controls" class="flex gap-3 items-center">
+                <button onclick="toggleLock()" id="lock-btn" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300" title="Lock/Unlock gallery" style="z-index: 100001 !important; position: relative;">🔒</button>
+                <button onclick="resetPositions()" id="reset-btn" class="text-sm hover:opacity-60 px-2 h-7 flex items-center justify-center transition-opacity duration-300" title="Reset positions">Reset</button>
+                <button onclick="zoomOut()" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300">−</button>
+                <button onclick="zoomIn()" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300">+</button>
             </div>
         </div>
     </header>
@@ -475,11 +425,6 @@
         </div>
     </footer>
 
-    <!-- Unlock Tutorial Popup -->
-    <div id="unlock-tutorial" class="hidden">
-        <h2>GALLERY UNLOCKED</h2>
-    </div>
-
     <script>
         const MAINTENANCE = {
             gallery: false,
@@ -495,7 +440,6 @@
         let draggedElement = null;
         let offsetX = 0;
         let offsetY = 0;
-        let hasSeenTutorial = false;
         let originalPositions = new Map();
         let activeSection = 'gallery';
 
@@ -522,7 +466,10 @@
 
         // Toggle lock/unlock mode
         function toggleLock() {
+            console.log('TOGGLE LOCK - BEFORE:', galleryUnlocked);
             galleryUnlocked = !galleryUnlocked;
+            console.log('TOGGLE LOCK - AFTER:', galleryUnlocked);
+            
             const section = document.getElementById('gallery-section');
             const body = document.body;
             const lockBtn = document.getElementById('lock-btn');
@@ -536,45 +483,14 @@
                 
                 storeOriginalPositions();
                 initializeUnlockedMode();
-                
-                // Show tutorial on first unlock
-                if (!hasSeenTutorial) {
-                    showTutorial();
-                    hasSeenTutorial = true;
-                }
             } else {
                 section.classList.remove('gallery-unlocked');
                 body.classList.remove('gallery-unlocked');
                 if (lockBtn) lockBtn.textContent = '🔒';
                 if (lockBtnMobile) lockBtnMobile.textContent = '🔒';
                 
-                // Keep positions but restore click handlers
                 restoreClickHandlers();
             }
-        }
-
-        // Show tutorial popup
-        function showTutorial() {
-            const tutorial = document.getElementById('unlock-tutorial');
-            tutorial.classList.remove('hidden');
-            
-            // Auto-hide after 5 seconds
-            const hideTimeout = setTimeout(() => {
-                tutorial.classList.add('hidden');
-            }, 5000);
-            
-            // Hide on any click anywhere
-            const hideOnClick = (e) => {
-                clearTimeout(hideTimeout);
-                tutorial.classList.add('hidden');
-                document.removeEventListener('click', hideOnClick);
-                e.stopPropagation();
-            };
-            
-            // Add click listener immediately
-            setTimeout(() => {
-                document.addEventListener('click', hideOnClick, true);
-            }, 100);
         }
 
         // Keyboard zoom with Ctrl+Scroll
@@ -638,10 +554,14 @@
 
         // Reset all positions to original
         function resetPositions() {
+            console.log('RESET button clicked');
             const galleryItems = document.querySelectorAll('#gallery-grid > div');
-            galleryItems.forEach((item) => {
+            console.log('Found', galleryItems.length, 'gallery items');
+            
+            galleryItems.forEach((item, index) => {
                 const original = originalPositions.get(item);
                 if (original) {
+                    console.log('Resetting item', index, 'to position', original);
                     item.style.left = original.left + 'px';
                     item.style.top = original.top + 'px';
                     item.style.width = original.width + 'px';
@@ -652,6 +572,8 @@
                         container.style.width = '100%';
                         container.style.height = '100%';
                     }
+                } else {
+                    console.log('No original position for item', index);
                 }
             });
         }
