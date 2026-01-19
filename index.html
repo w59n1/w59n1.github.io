@@ -121,11 +121,16 @@
             letter-spacing: 0.2em;
             display: inline-block;
         }
-        /* Remove ALL transitions from gallery */
+        /* Remove ALL transitions from gallery for performance */
         #gallery-grid,
         #gallery-grid > div,
-        #gallery-grid > div > div {
+        #gallery-grid > div > div,
+        #gallery-grid img {
             transition: none !important;
+        }
+        /* Only add transitions to non-gallery UI elements */
+        button, a, nav button {
+            transition: opacity 0.3s ease;
         }
         /* Ensure reset button shows when unlocked */
         #reset-btn {
@@ -183,8 +188,6 @@
         }
         .gallery-unlocked #gallery-grid {
             position: relative;
-            min-height: calc(100vh - 200px);
-            padding-bottom: 60px;
         }
         .gallery-unlocked #gallery-grid > div {
             cursor: move !important;
@@ -194,12 +197,9 @@
             -moz-user-select: none;
             -ms-user-select: none;
         }
-        .gallery-unlocked #gallery-grid > div:hover {
-            z-index: 100;
-        }
         .gallery-unlocked #gallery-grid > div.dragging {
             opacity: 1;
-            z-index: 1000;
+            z-index: 10000 !important;
             cursor: grabbing !important;
             pointer-events: none;
         }
@@ -207,24 +207,21 @@
         .gallery-unlocked #gallery-grid > div.positioned {
             cursor: move;
         }
-        /* Resize handle indicator */
-        .gallery-unlocked #gallery-grid > div.positioned::after {
-            content: '⌟';
-            position: absolute;
-            bottom: 4px;
-            right: 4px;
-            font-size: 18px;
-            color: rgba(0,0,0,0.5);
-            pointer-events: none;
-            z-index: 10;
-        }
         /* When items have been positioned */
         #gallery-grid > div.positioned {
             position: absolute !important;
             resize: both;
-            overflow: auto;
+            overflow: hidden;
             min-width: 50px;
             min-height: 50px;
+        }
+        /* Hide native resize handle */
+        #gallery-grid > div.positioned::-webkit-resizer {
+            display: none;
+        }
+        /* Only show resize cursor when unlocked */
+        body:not(.gallery-unlocked) #gallery-grid > div.positioned {
+            resize: none;
         }
         #gallery-grid > div.positioned .aspect-square {
             width: 100% !important;
@@ -234,11 +231,35 @@
         #gallery-grid > div.positioned img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: fill;
             pointer-events: none;
+        }
+        /* Hide any pseudo-elements when not unlocked */
+        #gallery-grid > div::after,
+        #gallery-grid > div::before,
+        #gallery-grid .aspect-square::after,
+        #gallery-grid .aspect-square::before {
+            display: none;
+        }
+        .gallery-unlocked #gallery-grid > div::after,
+        .gallery-unlocked #gallery-grid > div::before {
+            display: block;
         }
         .aspect-square {
             aspect-ratio: 1 / 1;
+        }
+        /* Custom grid column classes for more zoom levels */
+        .grid-cols-7 {
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+        }
+        .grid-cols-8 {
+            grid-template-columns: repeat(8, minmax(0, 1fr));
+        }
+        .grid-cols-9 {
+            grid-template-columns: repeat(9, minmax(0, 1fr));
+        }
+        .grid-cols-10 {
+            grid-template-columns: repeat(10, minmax(0, 1fr));
         }
         #gallery-grid {
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -297,40 +318,49 @@
     <!-- header -->
     <header class="fixed top-0 left-0 right-0 bg-white z-40">
         <!-- Mobile Header -->
-        <div class="md:hidden px-3 py-2.5">
-            <div class="flex justify-between items-center mb-2">
-                <nav class="flex gap-3 text-[11px]">
+        <div class="md:hidden px-3 py-3">
+            <!-- Logo row -->
+            <div class="flex justify-center mb-3">
+                <a href="#" onclick="showSection('gallery'); return false;" class="text-sm hover:opacity-60 transition-opacity duration-300 logo-stretch-mobile" style="text-align: center;">w59n1.com</a>
+            </div>
+            <!-- Navigation row -->
+            <div class="flex justify-center items-center mb-3">
+                <nav class="flex gap-6 text-xs justify-around w-full max-w-sm">
                     <button onclick="showSection('gallery')" id="tab-gallery-mobile" class="hover:opacity-60 transition-opacity duration-300 tab-active">Gallery</button>
                     <button onclick="showSection('weblog')" id="tab-weblog-mobile" class="hover:opacity-60 transition-opacity duration-300">Weblog</button>
                     <button onclick="showSection('shop')" id="tab-shop-mobile" class="hover:opacity-60 transition-opacity duration-300">Shop</button>
-                    <button onclick="showSection('contact')" id="tab-contact-mobile" class="text-[11px] hover:opacity-60 transition-opacity duration-300">Contact</button>
+                    <button onclick="showSection('contact')" id="tab-contact-mobile" class="hover:opacity-60 transition-opacity duration-300">Contact</button>
                 </nav>
             </div>
-            <div class="flex justify-center items-center mb-2">
-                <a href="#" onclick="showSection('gallery'); return false;" class="text-[10px] hover:opacity-60 transition-opacity duration-300 logo-stretch-mobile">w59n1.com</a>
-            </div>
-            <div id="gallery-controls-mobile" class="flex justify-center gap-2 items-center">
-                <button onclick="toggleLock()" id="lock-btn-mobile" class="text-sm hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300" title="Lock/Unlock" style="z-index: 100001 !important; position: relative;">🔒</button>
-                <button onclick="resetPositions()" id="reset-btn-mobile" class="text-[10px] hover:opacity-60 px-1.5 h-5 flex items-center justify-center transition-opacity duration-300">Reset</button>
-                <button onclick="zoomOut()" class="text-sm hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300">−</button>
-                <button onclick="zoomIn()" class="text-sm hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300">+</button>
+            <!-- Controls row -->
+            <div id="gallery-controls-mobile" class="flex justify-center gap-3 items-center">
+                <button onclick="toggleLock()" id="lock-btn-mobile" class="text-base hover:opacity-60 w-6 h-6 flex items-center justify-center transition-opacity duration-300" title="Lock/Unlock" style="z-index: 100001 !important; position: relative;">🔒</button>
+                <button onclick="resetPositions()" id="reset-btn-mobile" class="text-xs hover:opacity-60 px-2 h-6 flex items-center justify-center transition-opacity duration-300">Reset</button>
+                <button onclick="zoomOut()" class="text-base hover:opacity-60 w-6 h-6 flex items-center justify-center transition-opacity duration-300">−</button>
+                <button onclick="zoomIn()" class="text-base hover:opacity-60 w-6 h-6 flex items-center justify-center transition-opacity duration-300">+</button>
             </div>
         </div>
         
         <!-- Desktop Header -->
-        <div class="hidden md:flex px-6 py-4 justify-between items-center">
-            <nav class="flex gap-10 text-base">
-                <button onclick="showSection('gallery')" id="tab-gallery" class="hover:opacity-60 transition-opacity duration-300 tab-active">Gallery</button>
-                <button onclick="showSection('weblog')" id="tab-weblog" class="hover:opacity-60 transition-opacity duration-300">Weblog</button>
-                <button onclick="showSection('shop')" id="tab-shop" class="hover:opacity-60 transition-opacity duration-300">Shop</button>
-                <button onclick="showSection('contact')" id="tab-contact" class="text-base hover:opacity-60 transition-opacity duration-300">Contact</button>
-            </nav>
-            <a href="#" onclick="showSection('gallery'); return false;" class="absolute left-1/2 text-base hover:opacity-60 transition-opacity duration-300 logo-stretch">w59n1.com</a>
-            <div id="gallery-controls" class="flex gap-3 items-center">
-                <button onclick="toggleLock()" id="lock-btn" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300" title="Lock/Unlock gallery" style="z-index: 100001 !important; position: relative;">🔒</button>
-                <button onclick="resetPositions()" id="reset-btn" class="text-sm hover:opacity-60 px-2 h-7 flex items-center justify-center transition-opacity duration-300" title="Reset positions">Reset</button>
-                <button onclick="zoomOut()" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300">−</button>
-                <button onclick="zoomIn()" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300">+</button>
+        <div class="hidden md:block px-6 py-4">
+            <!-- Logo row -->
+            <div class="flex justify-center mb-3">
+                <a href="#" onclick="showSection('gallery'); return false;" class="text-base hover:opacity-60 transition-opacity duration-300 logo-stretch" style="text-align: center;">w59n1.com</a>
+            </div>
+            <!-- Navigation and controls row -->
+            <div class="flex items-center">
+                <nav class="flex gap-8 text-base flex-1 justify-start">
+                    <button onclick="showSection('gallery')" id="tab-gallery" class="hover:opacity-60 transition-opacity duration-300 tab-active">Gallery</button>
+                    <button onclick="showSection('weblog')" id="tab-weblog" class="hover:opacity-60 transition-opacity duration-300">Weblog</button>
+                    <button onclick="showSection('shop')" id="tab-shop" class="hover:opacity-60 transition-opacity duration-300">Shop</button>
+                    <button onclick="showSection('contact')" id="tab-contact" class="text-base hover:opacity-60 transition-opacity duration-300">Contact</button>
+                </nav>
+                <div id="gallery-controls" class="flex gap-3 items-center justify-end flex-1">
+                    <button onclick="toggleLock()" id="lock-btn" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300" title="Lock/Unlock gallery" style="z-index: 100001 !important; position: relative;">🔒</button>
+                    <button onclick="resetPositions()" id="reset-btn" class="text-sm hover:opacity-60 px-2 h-7 flex items-center justify-center transition-opacity duration-300" title="Reset positions">Reset</button>
+                    <button onclick="zoomOut()" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300">−</button>
+                    <button onclick="zoomIn()" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300">+</button>
+                </div>
             </div>
         </div>
     </header>
@@ -350,7 +380,7 @@
 
     <!-- contact -->
     <section id="contact-section" class="section" aria-labelledby="contact-heading">
-        <main class="px-4 md:px-8 pt-24 md:pt-20 pb-12">
+        <main class="px-4 md:px-8 pt-32 md:pt-28 pb-12">
             <h1 id="contact-heading" class="sr-only">Contact w59n1</h1>
             <div class="space-y-6 max-w-4xl">
                 <div>
@@ -367,7 +397,7 @@
 
     <!-- gallery  -->
     <section id="gallery-section" class="section active" aria-labelledby="gallery-heading">
-        <main class="px-4 pt-24 md:pt-20 pb-12 mx-auto">
+        <main class="px-4 pt-32 md:pt-28 pb-12 mx-auto">
             <h1 id="gallery-heading" class="sr-only">Art Gallery by w59n1</h1>
             <div id="gallery-grid" class="grid gap-4 md:gap-8" role="list"></div>
         </main>
@@ -375,7 +405,7 @@
 
     <!-- weblog  -->
     <section id="weblog-section" class="section" aria-labelledby="weblog-heading">
-        <main class="px-4 md:px-8 pt-24 md:pt-20 pb-12">
+        <main class="px-4 md:px-8 pt-32 md:pt-28 pb-12">
             <h1 id="weblog-heading" class="sr-only">w59n1 Weblog</h1>
             <div id="blog-posts" class="space-y-12 max-w-4xl"></div>
         </main>
@@ -383,7 +413,7 @@
 
     <!-- shop -->
     <section id="shop-section" class="section" aria-labelledby="shop-heading">
-        <main class="px-4 md:px-8 pt-24 md:pt-20 pb-12">
+        <main class="px-4 md:px-8 pt-32 md:pt-28 pb-12">
             <h1 id="shop-heading" class="sr-only">w59n1 Shop</h1>
             <div class="max-w-4xl">
                 <div class="text-sm mb-8">Coming soon.</div>
@@ -415,10 +445,10 @@
 
     <!-- Footer -->
     <footer class="bg-white z-30">
-        <div class="px-4 md:px-6 py-3 flex justify-between items-center">
+        <div class="px-4 md:px-6 py-3 flex justify-around items-center">
             <p class="text-xs text-gray-600">©</p>
             <p class="text-xs text-gray-600">2026</p>
-            <p class="text-xs text-gray-600">w59n1.</p>
+            <p class="text-xs text-gray-600">w59n1.com</p>
             <p class="text-xs text-gray-600">All</p>
             <p class="text-xs text-gray-600">rights</p>
             <p class="text-xs text-gray-600">reserved.</p>
@@ -435,7 +465,7 @@
         const MAINTENANCE_PASSWORD = "w59n1";
 
         let zoomLevel = 6;
-        const zoomLevels = [1, 2, 3, 4, 5, 6];
+        const zoomLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         let galleryUnlocked = false;
         let draggedElement = null;
         let offsetX = 0;
@@ -466,9 +496,7 @@
 
         // Toggle lock/unlock mode
         function toggleLock() {
-            console.log('TOGGLE LOCK - BEFORE:', galleryUnlocked);
             galleryUnlocked = !galleryUnlocked;
-            console.log('TOGGLE LOCK - AFTER:', galleryUnlocked);
             
             const section = document.getElementById('gallery-section');
             const body = document.body;
@@ -495,7 +523,7 @@
 
         // Keyboard zoom with Ctrl+Scroll
         document.addEventListener('wheel', function(e) {
-            if (e.ctrlKey && activeSection === 'gallery' && !galleryUnlocked) {
+            if (e.ctrlKey && activeSection === 'gallery') {
                 e.preventDefault();
                 
                 if (e.deltaY < 0) {
@@ -511,33 +539,18 @@
         // Initialize unlocked mode
         function initializeUnlockedMode() {
             const galleryItems = document.querySelectorAll('#gallery-grid > div');
+            
             galleryItems.forEach((item) => {
-                // Only position if not already positioned
-                if (!item.classList.contains('positioned')) {
-                    const original = originalPositions.get(item);
-                    if (original) {
-                        item.style.position = 'absolute';
-                        item.style.left = original.left + 'px';
-                        item.style.top = original.top + 'px';
-                        item.style.width = original.width + 'px';
-                        item.style.height = original.height + 'px';
-                        
-                        const container = item.querySelector('.aspect-square');
-                        if (container) {
-                            container.style.width = '100%';
-                            container.style.height = '100%';
-                        }
-                        
-                        item.classList.add('positioned');
-                    }
-                }
-                
-                // Remove lightbox click
+                // DON'T position items - let them stay in grid
+                // Just remove lightbox click and add drag handlers
                 item.onclick = null;
                 
                 // Add drag handlers
-                item.addEventListener('mousedown', startDrag);
-                item.addEventListener('touchstart', startDrag);
+                if (!item.hasAttribute('data-drag-initialized')) {
+                    item.addEventListener('mousedown', startDrag);
+                    item.addEventListener('touchstart', startDrag);
+                    item.setAttribute('data-drag-initialized', 'true');
+                }
             });
         }
 
@@ -554,14 +567,11 @@
 
         // Reset all positions to original
         function resetPositions() {
-            console.log('RESET button clicked');
             const galleryItems = document.querySelectorAll('#gallery-grid > div');
-            console.log('Found', galleryItems.length, 'gallery items');
             
-            galleryItems.forEach((item, index) => {
+            galleryItems.forEach((item) => {
                 const original = originalPositions.get(item);
                 if (original) {
-                    console.log('Resetting item', index, 'to position', original);
                     item.style.left = original.left + 'px';
                     item.style.top = original.top + 'px';
                     item.style.width = original.width + 'px';
@@ -572,8 +582,6 @@
                         container.style.width = '100%';
                         container.style.height = '100%';
                     }
-                } else {
-                    console.log('No original position for item', index);
                 }
             });
         }
@@ -581,6 +589,8 @@
         // Ultra-simplified drag - ZERO LAG
         let dragging = false;
         let startX, startY, initialLeft, initialTop;
+        let placeholder = null;
+        let zIndexCounter = 100; // Start at 100, increment each time
 
         function startDrag(e) {
             if (!galleryUnlocked) return;
@@ -599,6 +609,42 @@
             
             dragging = true;
             draggedElement = target;
+            
+            // Bring this image to front
+            zIndexCounter++;
+            draggedElement.style.zIndex = zIndexCounter;
+            
+            // If not yet positioned, position it now and create placeholder
+            if (!draggedElement.classList.contains('positioned')) {
+                const parentRect = draggedElement.parentElement.getBoundingClientRect();
+                const itemRect = draggedElement.getBoundingClientRect();
+                
+                // Create invisible placeholder to maintain grid space
+                placeholder = document.createElement('div');
+                placeholder.style.width = itemRect.width + 'px';
+                placeholder.style.height = itemRect.height + 'px';
+                placeholder.style.visibility = 'hidden';
+                placeholder.className = 'grid-placeholder';
+                
+                // Insert placeholder before removing from grid
+                draggedElement.parentNode.insertBefore(placeholder, draggedElement);
+                
+                // Now position the element absolutely
+                draggedElement.style.position = 'absolute';
+                draggedElement.style.left = (itemRect.left - parentRect.left) + 'px';
+                draggedElement.style.top = (itemRect.top - parentRect.top) + 'px';
+                draggedElement.style.width = itemRect.width + 'px';
+                draggedElement.style.height = itemRect.height + 'px';
+                
+                const container = draggedElement.querySelector('.aspect-square');
+                if (container) {
+                    container.style.width = '100%';
+                    container.style.height = '100%';
+                }
+                
+                draggedElement.classList.add('positioned');
+            }
+            
             draggedElement.classList.add('dragging');
             
             startX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -742,7 +788,11 @@
                 3: 'grid-cols-3',
                 4: 'grid-cols-4',
                 5: 'grid-cols-5',
-                6: 'grid-cols-6'
+                6: 'grid-cols-6',
+                7: 'grid-cols-7',
+                8: 'grid-cols-8',
+                9: 'grid-cols-9',
+                10: 'grid-cols-10'
             };
             
             gallery.className = `grid gap-4 md:gap-8 ${gridClasses[zoomLevel]}`;
