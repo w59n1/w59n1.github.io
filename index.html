@@ -87,9 +87,9 @@
         body {
             margin: 0;
             padding: 0;
-            /* Aggressive fluid text stretch - super stretched at full width */
-            font-stretch: calc(120% + (80% * (100vw / 1920px)));
-            letter-spacing: calc(0.08em + (0.25em * (100vw / 1920px)));
+            /* More aggressive fluid text stretch - super stretched at full width */
+            font-stretch: calc(140% + (120% * (100vw / 1920px)));
+            letter-spacing: calc(0.12em + (0.35em * (100vw / 1920px)));
             transition: font-stretch 0.3s ease-out, letter-spacing 0.3s ease-out;
         }
         /* Ensure images are never stretched */
@@ -104,13 +104,13 @@
         }
         /* Extra aggressive stretch for weblog and gallery text content */
         #blog-posts, #blog-posts * {
-            font-stretch: calc(140% + (100% * (100vw / 1920px))) !important;
-            letter-spacing: calc(0.1em + (0.3em * (100vw / 1920px))) !important;
+            font-stretch: calc(160% + (140% * (100vw / 1920px))) !important;
+            letter-spacing: calc(0.15em + (0.4em * (100vw / 1920px))) !important;
             transition: font-stretch 0.3s ease-out, letter-spacing 0.3s ease-out;
         }
         #gallery-section {
-            font-stretch: calc(140% + (100% * (100vw / 1920px))) !important;
-            letter-spacing: calc(0.1em + (0.3em * (100vw / 1920px))) !important;
+            font-stretch: calc(160% + (140% * (100vw / 1920px))) !important;
+            letter-spacing: calc(0.15em + (0.4em * (100vw / 1920px))) !important;
             transition: font-stretch 0.3s ease-out, letter-spacing 0.3s ease-out;
         }
         /* Reset stretch for images in these sections */
@@ -120,15 +120,112 @@
         }
         /* Super aggressive fluid logo stretch */
         .logo-stretch {
-            transform: translateX(-50%) scaleX(calc(2 + (3.5 * (100vw / 1920px))));
-            letter-spacing: calc(0.15em + (0.4em * (100vw / 1920px)));
+            transform: translateX(-50%) scaleX(calc(3.5 + (5 * (100vw / 1920px))));
+            letter-spacing: calc(0.3em + (0.6em * (100vw / 1920px)));
             transition: transform 0.3s ease-out, letter-spacing 0.3s ease-out;
         }
         /* Mobile logo stretch */
         .logo-stretch-mobile {
-            transform: scaleX(calc(1.4 + (1.2 * (100vw / 768px))));
-            letter-spacing: calc(0.1em + (0.2em * (100vw / 768px)));
+            transform: scaleX(calc(1.6 + (1.5 * (100vw / 768px))));
+            letter-spacing: calc(0.12em + (0.25em * (100vw / 768px)));
             transition: transform 0.3s ease-out, letter-spacing 0.3s ease-out;
+        }
+        /* Stretch navigation buttons */
+        nav button, #tab-contact, #tab-contact-mobile {
+            font-stretch: 180%;
+            letter-spacing: 0.2em;
+        }
+        /* Keep header above all images */
+        header {
+            z-index: 10000 !important;
+        }
+        /* Keep footer at bottom and above images */
+        footer {
+            position: relative;
+            z-index: 9999;
+            margin-top: auto;
+        }
+        /* Unlocked gallery mode - free positioning */
+        .gallery-unlocked #gallery-grid {
+            position: relative;
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+        .gallery-unlocked #gallery-grid > div {
+            cursor: move !important;
+            z-index: 1;
+            will-change: transform;
+            pointer-events: auto;
+        }
+        .gallery-unlocked #gallery-grid > div:hover {
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .gallery-unlocked #gallery-grid > div.dragging {
+            opacity: 0.95;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        .gallery-unlocked .aspect-square {
+            position: relative;
+            resize: both;
+            overflow: hidden;
+            min-width: 50px;
+            min-height: 50px;
+        }
+        /* Resize handle indicator */
+        .gallery-unlocked .aspect-square::after {
+            content: '⌟';
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            font-size: 14px;
+            color: rgba(0,0,0,0.3);
+            pointer-events: none;
+        }
+        /* When items have been positioned - maintain exact dimensions */
+        #gallery-grid > div.positioned {
+            position: absolute !important;
+        }
+        #gallery-grid > div.positioned .aspect-square {
+            aspect-ratio: auto !important;
+        }
+        /* Prevent images from going under header */
+        #gallery-section {
+            min-height: calc(100vh - 120px);
+        }
+        /* Reset button */
+        #reset-btn, #reset-btn-mobile {
+            display: none;
+        }
+        .gallery-unlocked #reset-btn,
+        .gallery-unlocked #reset-btn-mobile {
+            display: inline-flex !important;
+        }
+        /* Tutorial popup */
+        #unlock-tutorial {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px);
+            padding: 3rem 4rem;
+            border-radius: 0;
+            z-index: 10000;
+            text-align: center;
+            font-stretch: 200%;
+            letter-spacing: 0.4em;
+        }
+        #unlock-tutorial h2 {
+            font-stretch: 200%;
+            letter-spacing: 0.4em;
+            font-size: 2rem;
+            font-weight: normal;
+            text-transform: uppercase;
+        }
+        #unlock-tutorial.hidden {
+            display: none;
         }
         .aspect-square {
             aspect-ratio: 1 / 1;
@@ -202,7 +299,9 @@
             <div class="flex justify-center items-center mb-2">
                 <a href="#" onclick="showSection('gallery'); return false;" class="text-[10px] hover:opacity-60 transition-opacity duration-300 logo-stretch-mobile">w59n1.com</a>
             </div>
-            <div id="gallery-controls-mobile" class="flex justify-center gap-3">
+            <div id="gallery-controls-mobile" class="flex justify-center gap-2 items-center">
+                <button onclick="toggleLock()" id="lock-btn-mobile" class="text-sm hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300" title="Lock/Unlock">🔒</button>
+                <button onclick="resetPositions()" id="reset-btn-mobile" class="text-[10px] hover:opacity-60 px-1.5 h-5 flex items-center justify-center transition-opacity duration-300">Reset</button>
                 <button onclick="zoomOut()" class="text-sm hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300">−</button>
                 <button onclick="zoomIn()" class="text-sm hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300">+</button>
             </div>
@@ -217,7 +316,9 @@
             </nav>
             <a href="#" onclick="showSection('gallery'); return false;" class="absolute left-1/2 text-base hover:opacity-60 transition-opacity duration-300 logo-stretch">w59n1.com</a>
             <div class="flex items-center gap-6">
-                <div id="gallery-controls" class="flex gap-3">
+                <div id="gallery-controls" class="flex gap-3 items-center">
+                    <button onclick="toggleLock()" id="lock-btn" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300" title="Lock/Unlock gallery">🔒</button>
+                    <button onclick="resetPositions()" id="reset-btn" class="text-sm hover:opacity-60 px-2 h-7 flex items-center justify-center transition-opacity duration-300" title="Reset positions">Reset</button>
                     <button onclick="zoomOut()" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300">−</button>
                     <button onclick="zoomIn()" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300">+</button>
                 </div>
@@ -316,6 +417,11 @@
         </div>
     </footer>
 
+    <!-- Unlock Tutorial Popup -->
+    <div id="unlock-tutorial" class="hidden">
+        <h2>GALLERY UNLOCKED</h2>
+    </div>
+
     <script>
         const MAINTENANCE = {
             gallery: false,
@@ -327,6 +433,223 @@
 
         let zoomLevel = 4;
         const zoomLevels = [1, 2, 3, 4];
+        let galleryUnlocked = false;
+        let draggedElement = null;
+        let offsetX = 0;
+        let offsetY = 0;
+        let hasSeenTutorial = false;
+        let originalPositions = new Map();
+
+        // Store original grid positions
+        function storeOriginalPositions() {
+            const galleryItems = document.querySelectorAll('#gallery-grid > div');
+            galleryItems.forEach((item, index) => {
+                if (!originalPositions.has(item)) {
+                    const rect = item.getBoundingClientRect();
+                    const parentRect = item.parentElement.getBoundingClientRect();
+                    const container = item.querySelector('.aspect-square');
+                    const containerRect = container.getBoundingClientRect();
+                    
+                    originalPositions.set(item, {
+                        left: rect.left - parentRect.left,
+                        top: rect.top - parentRect.top,
+                        width: rect.width,
+                        height: containerRect.height,
+                        index: index
+                    });
+                }
+            });
+        }
+
+        // Toggle lock/unlock mode
+        function toggleLock() {
+            galleryUnlocked = !galleryUnlocked;
+            const section = document.getElementById('gallery-section');
+            const lockBtn = document.getElementById('lock-btn');
+            const lockBtnMobile = document.getElementById('lock-btn-mobile');
+            
+            if (galleryUnlocked) {
+                section.classList.add('gallery-unlocked');
+                if (lockBtn) lockBtn.textContent = '🔓';
+                if (lockBtnMobile) lockBtnMobile.textContent = '🔓';
+                
+                storeOriginalPositions();
+                initializeUnlockedMode();
+                
+                // Show tutorial on first unlock
+                if (!hasSeenTutorial) {
+                    showTutorial();
+                    hasSeenTutorial = true;
+                }
+            } else {
+                section.classList.remove('gallery-unlocked');
+                if (lockBtn) lockBtn.textContent = '🔒';
+                if (lockBtnMobile) lockBtnMobile.textContent = '🔒';
+                
+                // Keep positions but restore click handlers
+                restoreClickHandlers();
+            }
+        }
+
+        // Show tutorial popup
+        function showTutorial() {
+            const tutorial = document.getElementById('unlock-tutorial');
+            tutorial.classList.remove('hidden');
+            
+            // Auto-hide after 10 seconds
+            const hideTimeout = setTimeout(() => {
+                tutorial.classList.add('hidden');
+            }, 10000);
+            
+            // Hide on click
+            const hideOnClick = () => {
+                clearTimeout(hideTimeout);
+                tutorial.classList.add('hidden');
+                document.removeEventListener('click', hideOnClick);
+            };
+            
+            setTimeout(() => {
+                document.addEventListener('click', hideOnClick);
+            }, 100);
+        }
+
+        // Initialize unlocked mode
+        function initializeUnlockedMode() {
+            const galleryItems = document.querySelectorAll('#gallery-grid > div');
+            galleryItems.forEach((item) => {
+                // Only position if not already positioned
+                if (!item.classList.contains('positioned')) {
+                    const original = originalPositions.get(item);
+                    if (original) {
+                        item.style.position = 'absolute';
+                        item.style.left = original.left + 'px';
+                        item.style.top = original.top + 'px';
+                        item.style.width = original.width + 'px';
+                        
+                        const container = item.querySelector('.aspect-square');
+                        container.style.width = original.width + 'px';
+                        container.style.height = original.height + 'px';
+                        
+                        item.classList.add('positioned');
+                    }
+                }
+                
+                // Remove lightbox click
+                item.onclick = null;
+                
+                // Add drag handlers
+                item.addEventListener('mousedown', startDrag);
+                item.addEventListener('touchstart', startDrag);
+            });
+        }
+
+        // Restore click handlers when locked
+        function restoreClickHandlers() {
+            const galleryItems = document.querySelectorAll('#gallery-grid > div');
+            galleryItems.forEach((item, index) => {
+                const imageData = images[index];
+                if (imageData) {
+                    item.onclick = () => openLightbox(imageData.url, imageData.title, imageData.description, imageData.alt);
+                }
+            });
+        }
+
+        // Reset all positions to original
+        function resetPositions() {
+            const galleryItems = document.querySelectorAll('#gallery-grid > div');
+            galleryItems.forEach((item) => {
+                const original = originalPositions.get(item);
+                if (original) {
+                    item.style.left = original.left + 'px';
+                    item.style.top = original.top + 'px';
+                    item.style.width = original.width + 'px';
+                    
+                    const container = item.querySelector('.aspect-square');
+                    container.style.width = original.width + 'px';
+                    container.style.height = original.height + 'px';
+                }
+            });
+        }
+
+        // Drag functionality - ultra-optimized for smooth performance
+        let rafId = null;
+        let currentX = 0;
+        let currentY = 0;
+
+        function startDrag(e) {
+            if (!galleryUnlocked) return;
+            
+            // Prevent default behaviors
+            e.preventDefault();
+            e.stopPropagation();
+            
+            draggedElement = e.currentTarget;
+            draggedElement.classList.add('dragging');
+            
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            const rect = draggedElement.getBoundingClientRect();
+            offsetX = clientX - rect.left;
+            offsetY = clientY - rect.top;
+            
+            // Store initial position
+            currentX = clientX - offsetX;
+            currentY = clientY - offsetY;
+            
+            // Use passive: false for immediate response
+            document.addEventListener('mousemove', onDragMove, false);
+            document.addEventListener('touchmove', onDragMove, false);
+            document.addEventListener('mouseup', stopDrag, false);
+            document.addEventListener('touchend', stopDrag, false);
+        }
+
+        function onDragMove(e) {
+            if (!draggedElement) return;
+            
+            e.preventDefault();
+            
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            currentX = clientX - offsetX;
+            currentY = clientY - offsetY;
+            
+            // Cancel previous frame if still pending
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+            }
+            
+            // Schedule update for next frame
+            rafId = requestAnimationFrame(updatePosition);
+        }
+
+        function updatePosition() {
+            if (draggedElement) {
+                draggedElement.style.left = currentX + 'px';
+                draggedElement.style.top = currentY + 'px';
+            }
+            rafId = null;
+        }
+
+        function stopDrag(e) {
+            if (draggedElement) {
+                draggedElement.classList.remove('dragging');
+                
+                // Final position update
+                if (rafId) {
+                    cancelAnimationFrame(rafId);
+                    updatePosition();
+                }
+                
+                draggedElement = null;
+            }
+            
+            document.removeEventListener('mousemove', onDragMove);
+            document.removeEventListener('touchmove', onDragMove);
+            document.removeEventListener('mouseup', stopDrag);
+            document.removeEventListener('touchend', stopDrag);
+        }
 
         function showSection(section) {
             if (MAINTENANCE[section]) {
