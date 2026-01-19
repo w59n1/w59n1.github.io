@@ -87,8 +87,13 @@
         body {
             margin: 0;
             padding: 0;
-            font-stretch: 115%;
-            letter-spacing: 0.05em;
+        }
+        /* Only apply stretch on desktop */
+        @media (min-width: 768px) {
+            body {
+                font-stretch: 115%;
+                letter-spacing: 0.05em;
+            }
         }
         .aspect-square {
             aspect-ratio: 1 / 1;
@@ -149,19 +154,39 @@
 <body class="bg-white">
     <!-- header -->
     <header class="fixed top-0 left-0 right-0 bg-white z-40">
-        <div class="px-4 md:px-6 py-3 md:py-4 flex justify-between items-center">
-            <nav class="flex gap-3 md:gap-10 text-sm md:text-base" aria-label="Main navigation">
-                <button onclick="showSection('gallery')" id="tab-gallery" class="hover:opacity-60 transition-opacity duration-300 tab-active" aria-label="View gallery">Gallery</button>
-                <button onclick="showSection('weblog')" id="tab-weblog" class="hover:opacity-60 transition-opacity duration-300" aria-label="View weblog">Weblog</button>
-                <button onclick="showSection('shop')" id="tab-shop" class="hover:opacity-60 transition-opacity duration-300" aria-label="View shop">Shop</button>
+        <!-- Mobile Header -->
+        <div class="md:hidden px-3 py-2.5">
+            <div class="flex justify-between items-center mb-2">
+                <nav class="flex gap-3 text-[11px]">
+                    <button onclick="showSection('gallery')" id="tab-gallery-mobile" class="hover:opacity-60 transition-opacity duration-300 tab-active">Gallery</button>
+                    <button onclick="showSection('weblog')" id="tab-weblog-mobile" class="hover:opacity-60 transition-opacity duration-300">Weblog</button>
+                    <button onclick="showSection('shop')" id="tab-shop-mobile" class="hover:opacity-60 transition-opacity duration-300">Shop</button>
+                </nav>
+                <button onclick="showSection('contact')" id="tab-contact-mobile" class="text-[11px] hover:opacity-60 transition-opacity duration-300">Contact</button>
+            </div>
+            <div class="flex justify-center items-center mb-2">
+                <a href="#" onclick="showSection('gallery'); return false;" class="text-[10px] hover:opacity-60 transition-opacity duration-300" style="letter-spacing: 0.08em;">w59n1.com</a>
+            </div>
+            <div id="gallery-controls-mobile" class="flex justify-center gap-3">
+                <button onclick="zoomOut()" class="text-sm hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300">−</button>
+                <button onclick="zoomIn()" class="text-sm hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300">+</button>
+            </div>
+        </div>
+        
+        <!-- Desktop Header -->
+        <div class="hidden md:flex px-6 py-4 justify-between items-center">
+            <nav class="flex gap-10 text-base">
+                <button onclick="showSection('gallery')" id="tab-gallery" class="hover:opacity-60 transition-opacity duration-300 tab-active">Gallery</button>
+                <button onclick="showSection('weblog')" id="tab-weblog" class="hover:opacity-60 transition-opacity duration-300">Weblog</button>
+                <button onclick="showSection('shop')" id="tab-shop" class="hover:opacity-60 transition-opacity duration-300">Shop</button>
             </nav>
-            <a href="#" onclick="showSection('gallery'); return false;" class="absolute left-1/2 transform -translate-x-1/2 text-xs md:text-base hover:opacity-60 transition-opacity duration-300" style="transform: translateX(-50%) scaleX(2.5); letter-spacing: 0.2em;" aria-label="w59n1 home">w59n1.com</a>
-            <div class="flex items-center gap-2 md:gap-6">
-                <div id="gallery-controls" class="flex gap-2 md:gap-3">
-                    <button onclick="zoomOut()" class="text-base md:text-lg hover:opacity-60 w-6 h-6 md:w-7 md:h-7 flex items-center justify-center transition-opacity duration-300" aria-label="Zoom out gallery">−</button>
-                    <button onclick="zoomIn()" class="text-base md:text-lg hover:opacity-60 w-6 h-6 md:w-7 md:h-7 flex items-center justify-center transition-opacity duration-300" aria-label="Zoom in gallery">+</button>
+            <a href="#" onclick="showSection('gallery'); return false;" class="absolute left-1/2 text-base hover:opacity-60 transition-opacity duration-300" style="transform: translateX(-50%) scaleX(2.5); letter-spacing: 0.2em;">w59n1.com</a>
+            <div class="flex items-center gap-6">
+                <div id="gallery-controls" class="flex gap-3">
+                    <button onclick="zoomOut()" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300">−</button>
+                    <button onclick="zoomIn()" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300">+</button>
                 </div>
-                <button onclick="showSection('contact')" id="tab-contact" class="text-sm md:text-base hover:opacity-60 transition-opacity duration-300" aria-label="Contact">Contact</button>
+                <button onclick="showSection('contact')" id="tab-contact" class="text-base hover:opacity-60 transition-opacity duration-300">Contact</button>
             </div>
         </div>
     </header>
@@ -181,7 +206,7 @@
 
     <!-- contact -->
     <section id="contact-section" class="section" aria-labelledby="contact-heading">
-        <main class="px-4 md:px-8 pt-12 md:pt-14 pb-12">
+        <main class="px-4 md:px-8 pt-24 md:pt-20 pb-12">
             <h1 id="contact-heading" class="sr-only">Contact w59n1</h1>
             <div class="space-y-6 max-w-4xl">
                 <div>
@@ -198,7 +223,7 @@
 
     <!-- gallery  -->
     <section id="gallery-section" class="section active" aria-labelledby="gallery-heading">
-        <main class="px-4 pt-12 md:pt-14 pb-12 mx-auto">
+        <main class="px-4 pt-24 md:pt-20 pb-12 mx-auto">
             <h1 id="gallery-heading" class="sr-only">Art Gallery by w59n1</h1>
             <div id="gallery-grid" class="grid gap-4 md:gap-8" role="list"></div>
         </main>
@@ -206,7 +231,7 @@
 
     <!-- weblog  -->
     <section id="weblog-section" class="section" aria-labelledby="weblog-heading">
-        <main class="px-4 md:px-8 pt-12 md:pt-14 pb-12">
+        <main class="px-4 md:px-8 pt-24 md:pt-20 pb-12">
             <h1 id="weblog-heading" class="sr-only">w59n1 Weblog</h1>
             <div id="blog-posts" class="space-y-12 max-w-4xl"></div>
         </main>
@@ -214,7 +239,7 @@
 
     <!-- shop -->
     <section id="shop-section" class="section" aria-labelledby="shop-heading">
-        <main class="px-4 md:px-8 pt-12 md:pt-14 pb-12">
+        <main class="px-4 md:px-8 pt-24 md:pt-20 pb-12">
             <h1 id="shop-heading" class="sr-only">w59n1 Shop</h1>
             <div class="max-w-4xl">
                 <div class="text-sm mb-8">Coming soon.</div>
@@ -287,13 +312,22 @@
             document.querySelectorAll('[id^="tab-"]').forEach(t => t.classList.remove('tab-active'));
             
             document.getElementById(section + '-section').classList.add('active');
-            document.getElementById('tab-' + section).classList.add('tab-active');
             
-            const controls = document.getElementById('gallery-controls');
+            // Update both desktop and mobile tabs
+            const desktopTab = document.getElementById('tab-' + section);
+            const mobileTab = document.getElementById('tab-' + section + '-mobile');
+            if (desktopTab) desktopTab.classList.add('tab-active');
+            if (mobileTab) mobileTab.classList.add('tab-active');
+            
+            // Handle gallery controls visibility
+            const controlsDesktop = document.getElementById('gallery-controls');
+            const controlsMobile = document.getElementById('gallery-controls-mobile');
             if (section === 'gallery') {
-                controls.style.display = 'flex';
+                if (controlsDesktop) controlsDesktop.style.display = 'flex';
+                if (controlsMobile) controlsMobile.style.display = 'flex';
             } else {
-                controls.style.display = 'none';
+                if (controlsDesktop) controlsDesktop.style.display = 'none';
+                if (controlsMobile) controlsMobile.style.display = 'none';
             }
 
             // Update page title based on section
@@ -371,7 +405,7 @@
             { id: 3, url: 'images/TRASHWORLD.jpg', title: 'My Trash World', description: 'My Trash World\n1417x1417\n01/07/2026', alt: 'My Trash World' },
             { id: 4, url: 'images/overtoolate.jpg', title: 'Over Too Late', description: 'Over Too Late\n1417x1417\n01/07/2026', alt: 'Over Too Late' },
             { id: 5, url: 'images/vivalapsycho.jpg', title: 'Viva La Psycho', description: 'Viva La Psycho\n1417x1417\n01/03/2026', alt: 'Viva La Psycho' },
-            { id: 6, url: 'images/MONSTERBEAST_FINAL.jpg', title: 'Beast', description: 'Beast\nFeatured on @welcome.jpg Instagram page\n1417x1417\n12/24/2025', alt: 'Beast' },
+            { id: 6, url: 'images/MONSTERBEAST_FINAL.jpg', title: 'Beast', description: 'Beast\nFeatured on @welcome.jpeg Instagram page\n1417x1417\n12/24/2025', alt: 'Beast' },
             { id: 7, url: 'images/HOLYMASK.jpg', title: 'Holy Mask', description: 'The Holy Mask\n1417x1417\n12/21/2025', alt: 'The Holy Mask' },
             { id: 8, url: 'images/FREACKY.jpg', title: 'Freacky', description: 'Freacky\n1417x1417\n12/21/2025', alt: 'Freacky' },
             { id: 9, url: 'images/FUCKTHIS.jpg', title: 'Fuck This', description: 'Fuck This\n1417x1417\n12/20/2025', alt: 'Fuck This' },
