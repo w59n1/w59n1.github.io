@@ -87,48 +87,61 @@
         body {
             margin: 0;
             padding: 0;
-            /* More aggressive fluid text stretch - super stretched at full width */
-            font-stretch: calc(140% + (120% * (100vw / 1920px)));
-            letter-spacing: calc(0.12em + (0.35em * (100vw / 1920px)));
-            transition: font-stretch 0.3s ease-out, letter-spacing 0.3s ease-out;
+            /* Aggressive text stretch on ALL devices - no media query */
+            font-stretch: 200%;
+            letter-spacing: 0.3em;
         }
-        /* Ensure images are never stretched */
-        img, picture, video, canvas, svg {
-            font-stretch: normal !important;
-            letter-spacing: normal !important;
-            transform: none !important;
+        /* Even more aggressive stretch for weblog and gallery */
+        #blog-posts, #blog-posts *, 
+        #gallery-section, #gallery-section * {
+            font-stretch: 250% !important;
+            letter-spacing: 0.4em !important;
         }
-        /* Keep image containers square */
-        .aspect-square {
-            font-stretch: normal !important;
-        }
-        /* Extra aggressive stretch for weblog and gallery text content */
-        #blog-posts, #blog-posts * {
-            font-stretch: calc(160% + (140% * (100vw / 1920px))) !important;
-            letter-spacing: calc(0.15em + (0.4em * (100vw / 1920px))) !important;
-            transition: font-stretch 0.3s ease-out, letter-spacing 0.3s ease-out;
-        }
-        #gallery-section {
-            font-stretch: calc(160% + (140% * (100vw / 1920px))) !important;
-            letter-spacing: calc(0.15em + (0.4em * (100vw / 1920px))) !important;
-            transition: font-stretch 0.3s ease-out, letter-spacing 0.3s ease-out;
-        }
-        /* Reset stretch for images in these sections */
-        #blog-posts img, #gallery-grid img {
+        /* Force images to never stretch */
+        img, picture, video, canvas, svg,
+        .aspect-square, #gallery-grid > div {
             font-stretch: normal !important;
             letter-spacing: normal !important;
         }
-        /* Super aggressive fluid logo stretch */
+        /* Navigation extra stretched */
+        nav button, #tab-contact, #tab-contact-mobile,
+        button, a {
+            font-stretch: 200%;
+            letter-spacing: 0.25em;
+        }
+        /* Logo stretch - stretched but readable */
         .logo-stretch {
-            transform: translateX(-50%) scaleX(calc(3.5 + (5 * (100vw / 1920px))));
-            letter-spacing: calc(0.3em + (0.6em * (100vw / 1920px)));
-            transition: transform 0.3s ease-out, letter-spacing 0.3s ease-out;
+            transform: translateX(-50%) scaleX(2.8);
+            letter-spacing: 0.35em;
+            display: inline-block;
         }
-        /* Mobile logo stretch */
+        /* Mobile logo stretch - also readable */
         .logo-stretch-mobile {
-            transform: scaleX(calc(1.6 + (1.5 * (100vw / 768px))));
-            letter-spacing: calc(0.12em + (0.25em * (100vw / 768px)));
-            transition: transform 0.3s ease-out, letter-spacing 0.3s ease-out;
+            transform: scaleX(1.8);
+            letter-spacing: 0.2em;
+            display: inline-block;
+        }
+        /* Remove ALL transitions from gallery */
+        #gallery-grid,
+        #gallery-grid > div,
+        #gallery-grid > div > div {
+            transition: none !important;
+        }
+        /* Ensure reset button shows when unlocked */
+        #reset-btn {
+            display: none !important;
+        }
+        body.gallery-unlocked #reset-btn {
+            display: inline-flex !important;
+            font-size: 0.875rem;
+            padding: 0 0.5rem;
+            height: 1.75rem;
+        }
+        #reset-btn-mobile {
+            display: none !important;
+        }
+        body.gallery-unlocked #reset-btn-mobile {
+            display: inline-flex !important;
         }
         /* Stretch navigation buttons */
         nav button, #tab-contact, #tab-contact-mobile {
@@ -138,69 +151,114 @@
         /* Keep header above all images */
         header {
             z-index: 10000 !important;
-        }
-        /* Keep footer at bottom and above images */
-        footer {
             position: relative;
+        }
+        header button {
+            position: relative;
+            z-index: 10001;
+            pointer-events: auto;
+        }
+        /* Force footer to absolute bottom - always visible */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .section {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .section main {
+            flex: 1;
+        }
+        footer {
+            position: sticky;
+            bottom: 0;
             z-index: 9999;
+            background: white;
+            width: 100%;
+            flex-shrink: 0;
             margin-top: auto;
         }
-        /* Unlocked gallery mode - free positioning */
+        /* Tutorial popup - translucent overlay over everything */
+        #unlock-tutorial {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(8px);
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        #unlock-tutorial h2 {
+            font-stretch: 200%;
+            letter-spacing: 0.4em;
+            font-size: 3rem;
+            font-weight: normal;
+            text-transform: uppercase;
+            color: black;
+        }
+        #unlock-tutorial.hidden {
+            display: none;
+        }
         .gallery-unlocked #gallery-grid {
             position: relative;
-            min-height: 100vh;
+            min-height: calc(100vh - 200px);
             padding-bottom: 60px;
         }
         .gallery-unlocked #gallery-grid > div {
             cursor: move !important;
             z-index: 1;
-            will-change: transform;
-            pointer-events: auto;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
         .gallery-unlocked #gallery-grid > div:hover {
             z-index: 100;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         .gallery-unlocked #gallery-grid > div.dragging {
-            opacity: 0.95;
+            opacity: 1;
             z-index: 1000;
+            cursor: grabbing !important;
             pointer-events: none;
         }
-        .gallery-unlocked .aspect-square {
-            position: relative;
+        /* Enable browser native resize - no custom styling that causes lag */
+        .gallery-unlocked #gallery-grid > div.positioned {
             resize: both;
-            overflow: hidden;
-            min-width: 50px;
-            min-height: 50px;
+            overflow: auto;
         }
         /* Resize handle indicator */
-        .gallery-unlocked .aspect-square::after {
+        .gallery-unlocked #gallery-grid > div.positioned::after {
             content: '⌟';
             position: absolute;
-            bottom: 2px;
-            right: 2px;
-            font-size: 14px;
-            color: rgba(0,0,0,0.3);
+            bottom: 4px;
+            right: 4px;
+            font-size: 18px;
+            color: rgba(0,0,0,0.5);
             pointer-events: none;
+            z-index: 10;
         }
-        /* When items have been positioned - maintain exact dimensions */
+        /* When items have been positioned */
         #gallery-grid > div.positioned {
             position: absolute !important;
         }
         #gallery-grid > div.positioned .aspect-square {
+            width: 100% !important;
+            height: 100% !important;
             aspect-ratio: auto !important;
         }
-        /* Prevent images from going under header */
-        #gallery-section {
-            min-height: calc(100vh - 120px);
-        }
-        /* Reset button */
-        #reset-btn, #reset-btn-mobile {
-            display: none;
-        }
-        .gallery-unlocked #reset-btn,
-        .gallery-unlocked #reset-btn-mobile {
-            display: inline-flex !important;
+        #gallery-grid > div.positioned img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
         }
         /* Tutorial popup */
         #unlock-tutorial {
@@ -431,14 +489,15 @@
         };
         const MAINTENANCE_PASSWORD = "w59n1";
 
-        let zoomLevel = 4;
-        const zoomLevels = [1, 2, 3, 4];
+        let zoomLevel = 6;
+        const zoomLevels = [1, 2, 3, 4, 5, 6];
         let galleryUnlocked = false;
         let draggedElement = null;
         let offsetX = 0;
         let offsetY = 0;
         let hasSeenTutorial = false;
         let originalPositions = new Map();
+        let activeSection = 'gallery';
 
         // Store original grid positions
         function storeOriginalPositions() {
@@ -465,11 +524,13 @@
         function toggleLock() {
             galleryUnlocked = !galleryUnlocked;
             const section = document.getElementById('gallery-section');
+            const body = document.body;
             const lockBtn = document.getElementById('lock-btn');
             const lockBtnMobile = document.getElementById('lock-btn-mobile');
             
             if (galleryUnlocked) {
                 section.classList.add('gallery-unlocked');
+                body.classList.add('gallery-unlocked');
                 if (lockBtn) lockBtn.textContent = '🔓';
                 if (lockBtnMobile) lockBtnMobile.textContent = '🔓';
                 
@@ -483,6 +544,7 @@
                 }
             } else {
                 section.classList.remove('gallery-unlocked');
+                body.classList.remove('gallery-unlocked');
                 if (lockBtn) lockBtn.textContent = '🔒';
                 if (lockBtnMobile) lockBtnMobile.textContent = '🔒';
                 
@@ -496,22 +558,39 @@
             const tutorial = document.getElementById('unlock-tutorial');
             tutorial.classList.remove('hidden');
             
-            // Auto-hide after 10 seconds
+            // Auto-hide after 5 seconds
             const hideTimeout = setTimeout(() => {
                 tutorial.classList.add('hidden');
-            }, 10000);
+            }, 5000);
             
-            // Hide on click
-            const hideOnClick = () => {
+            // Hide on any click anywhere
+            const hideOnClick = (e) => {
                 clearTimeout(hideTimeout);
                 tutorial.classList.add('hidden');
                 document.removeEventListener('click', hideOnClick);
+                e.stopPropagation();
             };
             
+            // Add click listener immediately
             setTimeout(() => {
-                document.addEventListener('click', hideOnClick);
+                document.addEventListener('click', hideOnClick, true);
             }, 100);
         }
+
+        // Keyboard zoom with Ctrl+Scroll
+        document.addEventListener('wheel', function(e) {
+            if (e.ctrlKey && activeSection === 'gallery' && !galleryUnlocked) {
+                e.preventDefault();
+                
+                if (e.deltaY < 0) {
+                    // Scroll up = zoom in (fewer columns)
+                    zoomIn();
+                } else {
+                    // Scroll down = zoom out (more columns)
+                    zoomOut();
+                }
+            }
+        }, { passive: false });
 
         // Initialize unlocked mode
         function initializeUnlockedMode() {
@@ -525,10 +604,13 @@
                         item.style.left = original.left + 'px';
                         item.style.top = original.top + 'px';
                         item.style.width = original.width + 'px';
+                        item.style.height = original.height + 'px';
                         
                         const container = item.querySelector('.aspect-square');
-                        container.style.width = original.width + 'px';
-                        container.style.height = original.height + 'px';
+                        if (container) {
+                            container.style.width = '100%';
+                            container.style.height = '100%';
+                        }
                         
                         item.classList.add('positioned');
                     }
@@ -563,92 +645,76 @@
                     item.style.left = original.left + 'px';
                     item.style.top = original.top + 'px';
                     item.style.width = original.width + 'px';
+                    item.style.height = original.height + 'px';
                     
                     const container = item.querySelector('.aspect-square');
-                    container.style.width = original.width + 'px';
-                    container.style.height = original.height + 'px';
+                    if (container) {
+                        container.style.width = '100%';
+                        container.style.height = '100%';
+                    }
                 }
             });
         }
 
-        // Drag functionality - ultra-optimized for smooth performance
-        let rafId = null;
-        let currentX = 0;
-        let currentY = 0;
+        // Ultra-simplified drag - ZERO LAG
+        let dragging = false;
+        let startX, startY, initialLeft, initialTop;
 
         function startDrag(e) {
             if (!galleryUnlocked) return;
             
-            // Prevent default behaviors
-            e.preventDefault();
-            e.stopPropagation();
+            const target = e.currentTarget;
+            const rect = target.getBoundingClientRect();
+            const clickX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+            const clickY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
             
-            draggedElement = e.currentTarget;
+            // If clicking resize corner, don't drag
+            if (clickX > rect.width - 30 && clickY > rect.height - 30) {
+                return;
+            }
+            
+            e.preventDefault();
+            
+            dragging = true;
+            draggedElement = target;
             draggedElement.classList.add('dragging');
             
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            startX = e.touches ? e.touches[0].clientX : e.clientX;
+            startY = e.touches ? e.touches[0].clientY : e.clientY;
+            initialLeft = parseFloat(draggedElement.style.left) || 0;
+            initialTop = parseFloat(draggedElement.style.top) || 0;
             
-            const rect = draggedElement.getBoundingClientRect();
-            offsetX = clientX - rect.left;
-            offsetY = clientY - rect.top;
-            
-            // Store initial position
-            currentX = clientX - offsetX;
-            currentY = clientY - offsetY;
-            
-            // Use passive: false for immediate response
-            document.addEventListener('mousemove', onDragMove, false);
-            document.addEventListener('touchmove', onDragMove, false);
-            document.addEventListener('mouseup', stopDrag, false);
-            document.addEventListener('touchend', stopDrag, false);
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('touchmove', drag);
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
         }
 
-        function onDragMove(e) {
-            if (!draggedElement) return;
-            
+        function drag(e) {
+            if (!dragging || !draggedElement) return;
             e.preventDefault();
             
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const currentX = e.touches ? e.touches[0].clientX : e.clientX;
+            const currentY = e.touches ? e.touches[0].clientY : e.clientY;
             
-            currentX = clientX - offsetX;
-            currentY = clientY - offsetY;
+            const dx = currentX - startX;
+            const dy = currentY - startY;
             
-            // Cancel previous frame if still pending
-            if (rafId) {
-                cancelAnimationFrame(rafId);
-            }
-            
-            // Schedule update for next frame
-            rafId = requestAnimationFrame(updatePosition);
+            draggedElement.style.left = (initialLeft + dx) + 'px';
+            draggedElement.style.top = (initialTop + dy) + 'px';
         }
 
-        function updatePosition() {
-            if (draggedElement) {
-                draggedElement.style.left = currentX + 'px';
-                draggedElement.style.top = currentY + 'px';
-            }
-            rafId = null;
-        }
-
-        function stopDrag(e) {
+        function endDrag() {
             if (draggedElement) {
                 draggedElement.classList.remove('dragging');
-                
-                // Final position update
-                if (rafId) {
-                    cancelAnimationFrame(rafId);
-                    updatePosition();
-                }
-                
                 draggedElement = null;
             }
+            dragging = false;
             
-            document.removeEventListener('mousemove', onDragMove);
-            document.removeEventListener('touchmove', onDragMove);
-            document.removeEventListener('mouseup', stopDrag);
-            document.removeEventListener('touchend', stopDrag);
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('touchmove', drag);
+            document.removeEventListener('mouseup', endDrag);
+            document.removeEventListener('touchend', endDrag);
         }
 
         function showSection(section) {
@@ -659,6 +725,8 @@
                     return;
                 }
             }
+            
+            activeSection = section;
             
             try {
                 localStorage.setItem('currentSection', section);
@@ -750,7 +818,9 @@
                 1: 'grid-cols-1',
                 2: 'grid-cols-2',
                 3: 'grid-cols-3',
-                4: 'grid-cols-4'
+                4: 'grid-cols-4',
+                5: 'grid-cols-5',
+                6: 'grid-cols-6'
             };
             
             gallery.className = `grid gap-4 md:gap-8 ${gridClasses[zoomLevel]}`;
