@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>w59n1.com</title>
     
     <!-- Enhanced SEO Meta Tags -->
@@ -84,18 +84,71 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+        html {
+            overflow-x: hidden;
+            width: 100%;
+            position: fixed;
+            height: 100%;
+        }
         body {
             margin: 0;
             padding: 0;
-            /* Aggressive text stretch on ALL devices - no media query */
+            overflow-x: hidden;
+            overflow-y: auto;
+            width: 100%;
+            position: relative;
+            height: 100%;
+            -webkit-overflow-scrolling: touch;
+            /* Text stretch on desktop */
             font-stretch: 200%;
             letter-spacing: 0.3em;
         }
-        /* Even more aggressive stretch for weblog and gallery */
-        #blog-posts, #blog-posts *, 
-        #gallery-section, #gallery-section * {
-            font-stretch: 250% !important;
-            letter-spacing: 0.4em !important;
+        /* Mobile specific fixes */
+        @media (max-width: 768px) {
+            body {
+                font-stretch: 150%;
+                letter-spacing: 0.2em;
+                position: relative;
+                overflow-x: hidden !important;
+                width: 100vw;
+                max-width: 100vw;
+            }
+            #blog-posts, #blog-posts *, 
+            #gallery-section, #gallery-section * {
+                font-stretch: 180% !important;
+                letter-spacing: 0.3em !important;
+            }
+            /* Prevent any element from causing horizontal scroll */
+            * {
+                max-width: 100vw;
+            }
+            /* Make gallery grid fit perfectly */
+            #gallery-grid {
+                width: 100%;
+                max-width: 100%;
+            }
+            /* Ensure main containers don't overflow */
+            main {
+                width: 100%;
+                max-width: 100%;
+                overflow-x: hidden;
+            }
+            /* Positioned items stay within viewport */
+            #gallery-grid > div.positioned {
+                max-width: calc(100vw - 2rem) !important;
+            }
+        }
+        /* Desktop text stretch */
+        @media (min-width: 769px) {
+            #blog-posts, #blog-posts *, 
+            #gallery-section, #gallery-section * {
+                font-stretch: 250% !important;
+                letter-spacing: 0.4em !important;
+            }
         }
         /* Force images to never stretch */
         img, picture, video, canvas, svg,
@@ -109,6 +162,13 @@
             font-stretch: 200%;
             letter-spacing: 0.25em;
         }
+        @media (max-width: 768px) {
+            nav button, #tab-contact, #tab-contact-mobile,
+            button, a {
+                font-stretch: 150%;
+                letter-spacing: 0.15em;
+            }
+        }
         /* Logo stretch - stretched but readable */
         .logo-stretch {
             transform: translateX(-50%) scaleX(2.8);
@@ -117,12 +177,15 @@
         }
         /* Mobile logo stretch - also readable */
         .logo-stretch-mobile {
-            transform: scaleX(1.8);
-            letter-spacing: 0.2em;
+            transform: scaleX(1.5);
+            letter-spacing: 0.15em;
             display: inline-block;
         }
         /* Remove ALL transitions from gallery for performance */
         #gallery-grid,
+        #gallery-grid {
+            position: relative; /* Positioned items are relative to this container */
+        }
         #gallery-grid > div,
         #gallery-grid > div > div,
         #gallery-grid img {
@@ -132,21 +195,23 @@
         button, a, nav button {
             transition: opacity 0.3s ease;
         }
-        /* Ensure reset button shows when unlocked */
+        /* Ensure reset button shows when unlocked - use visibility to prevent layout shift */
         #reset-btn {
-            display: none !important;
-        }
-        body.gallery-unlocked #reset-btn {
-            display: inline-flex !important;
+            visibility: hidden;
+            width: 60px; /* Fixed width to maintain spacing */
             font-size: 0.875rem;
             padding: 0 0.5rem;
             height: 1.75rem;
         }
+        body.gallery-unlocked #reset-btn {
+            visibility: visible;
+        }
         #reset-btn-mobile {
-            display: none !important;
+            visibility: hidden;
+            width: 45px; /* Fixed width for mobile */
         }
         body.gallery-unlocked #reset-btn-mobile {
-            display: inline-flex !important;
+            visibility: visible;
         }
         /* Stretch navigation buttons */
         nav button, #tab-contact, #tab-contact-mobile {
@@ -172,9 +237,11 @@
         body {
             display: flex;
             flex-direction: column;
+            min-height: 100vh;
         }
         .section {
             flex: 1 0 auto;
+            min-height: 0;
         }
         footer {
             flex-shrink: 0;
@@ -203,25 +270,36 @@
             cursor: grabbing !important;
             pointer-events: none;
         }
-        /* Enable browser native resize - no custom styling that causes lag */
-        .gallery-unlocked #gallery-grid > div.positioned {
-            cursor: move;
-        }
-        /* When items have been positioned */
+        /* When items have been positioned - ALWAYS absolute */
         #gallery-grid > div.positioned {
             position: absolute !important;
-            resize: both;
-            overflow: hidden;
             min-width: 50px;
             min-height: 50px;
+            z-index: 1; /* Base z-index for positioned items */
+        }
+        /* Ensure lightbox is always above everything */
+        #lightbox {
+            z-index: 100000 !important;
+        }
+        /* Mobile: disable resize */
+        @media (max-width: 768px) {
+            #gallery-grid > div.positioned {
+                resize: none !important;
+            }
+        }
+        /* Desktop: enable resize when unlocked */
+        @media (min-width: 769px) {
+            .gallery-unlocked #gallery-grid > div.positioned {
+                resize: both;
+                overflow: hidden;
+            }
+            body:not(.gallery-unlocked) #gallery-grid > div.positioned {
+                resize: none;
+            }
         }
         /* Hide native resize handle */
         #gallery-grid > div.positioned::-webkit-resizer {
             display: none;
-        }
-        /* Only show resize cursor when unlocked */
-        body:not(.gallery-unlocked) #gallery-grid > div.positioned {
-            resize: none;
         }
         #gallery-grid > div.positioned .aspect-square {
             width: 100% !important;
@@ -232,7 +310,14 @@
             width: 100%;
             height: 100%;
             object-fit: fill;
+        }
+        /* When unlocked, disable pointer events on images so dragging works */
+        .gallery-unlocked #gallery-grid > div.positioned img {
             pointer-events: none;
+        }
+        /* When locked, positioned items should be clickable */
+        body:not(.gallery-unlocked) #gallery-grid > div.positioned {
+            cursor: pointer !important;
         }
         /* Hide any pseudo-elements when not unlocked */
         #gallery-grid > div::after,
@@ -261,15 +346,6 @@
         .grid-cols-10 {
             grid-template-columns: repeat(10, minmax(0, 1fr));
         }
-        #gallery-grid {
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        #gallery-grid > div {
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        #gallery-grid > div > div {
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
         #menu {
             transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -281,6 +357,9 @@
         }
         #lightbox.show {
             opacity: 1;
+        }
+        body.lightbox-open {
+            overflow: hidden;
         }
         #lightbox-image {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -304,28 +383,20 @@
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
-        /* Blur-up effect for images */
-        img[data-src] {
-            filter: blur(10px);
-            transition: filter 0.3s;
-        }
-        img.loaded {
-            filter: blur(0);
-        }
     </style>
 </head>
 <body class="bg-white">
     <!-- header -->
     <header class="fixed top-0 left-0 right-0 bg-white z-40">
         <!-- Mobile Header -->
-        <div class="md:hidden px-3 py-3">
+        <div class="md:hidden px-3 py-2">
             <!-- Logo row -->
-            <div class="flex justify-center mb-3">
-                <a href="#" onclick="showSection('gallery'); return false;" class="text-sm hover:opacity-60 transition-opacity duration-300 logo-stretch-mobile" style="text-align: center;">w59n1.com</a>
+            <div class="flex justify-center mb-2">
+                <a href="#" onclick="event.preventDefault(); showSection('gallery');" class="text-xs hover:opacity-60 transition-opacity duration-300 logo-stretch-mobile" style="text-align: center;">w59n1.com</a>
             </div>
             <!-- Navigation row -->
-            <div class="flex justify-center items-center mb-3">
-                <nav class="flex gap-6 text-xs justify-around w-full max-w-sm">
+            <div class="flex justify-center items-center mb-2">
+                <nav class="flex gap-4 text-xs justify-around w-full max-w-sm">
                     <button onclick="showSection('gallery')" id="tab-gallery-mobile" class="hover:opacity-60 transition-opacity duration-300 tab-active">Gallery</button>
                     <button onclick="showSection('weblog')" id="tab-weblog-mobile" class="hover:opacity-60 transition-opacity duration-300">Weblog</button>
                     <button onclick="showSection('shop')" id="tab-shop-mobile" class="hover:opacity-60 transition-opacity duration-300">Shop</button>
@@ -333,11 +404,11 @@
                 </nav>
             </div>
             <!-- Controls row -->
-            <div id="gallery-controls-mobile" class="flex justify-center gap-3 items-center">
-                <button onclick="toggleLock()" id="lock-btn-mobile" class="text-base hover:opacity-60 w-6 h-6 flex items-center justify-center transition-opacity duration-300" title="Lock/Unlock" style="z-index: 100001 !important; position: relative;">🔒</button>
-                <button onclick="resetPositions()" id="reset-btn-mobile" class="text-xs hover:opacity-60 px-2 h-6 flex items-center justify-center transition-opacity duration-300">Reset</button>
-                <button onclick="zoomOut()" class="text-base hover:opacity-60 w-6 h-6 flex items-center justify-center transition-opacity duration-300">−</button>
-                <button onclick="zoomIn()" class="text-base hover:opacity-60 w-6 h-6 flex items-center justify-center transition-opacity duration-300">+</button>
+            <div id="gallery-controls-mobile" class="flex justify-center gap-2 items-center">
+                <button onclick="zoomOut()" class="text-sm hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300">−</button>
+                <button onclick="zoomIn()" class="text-sm hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300">+</button>
+                <button onclick="toggleLock()" id="lock-btn-mobile" class="text-sm hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300" title="Lock/Unlock" style="z-index: 100001 !important; position: relative;">🔒</button>
+                <button onclick="resetPositions()" id="reset-btn-mobile" class="text-xs hover:opacity-60 px-1 h-5 inline-flex items-center justify-center transition-opacity duration-300">Reset</button>
             </div>
         </div>
         
@@ -345,7 +416,7 @@
         <div class="hidden md:block px-6 py-4">
             <!-- Logo row -->
             <div class="flex justify-center mb-3">
-                <a href="#" onclick="showSection('gallery'); return false;" class="text-base hover:opacity-60 transition-opacity duration-300 logo-stretch" style="text-align: center;">w59n1.com</a>
+                <a href="#" onclick="event.preventDefault(); showSection('gallery');" class="text-base hover:opacity-60 transition-opacity duration-300 logo-stretch" style="text-align: center;">w59n1.com</a>
             </div>
             <!-- Navigation and controls row -->
             <div class="flex items-center">
@@ -356,10 +427,10 @@
                     <button onclick="showSection('contact')" id="tab-contact" class="text-base hover:opacity-60 transition-opacity duration-300">Contact</button>
                 </nav>
                 <div id="gallery-controls" class="flex gap-3 items-center justify-end flex-1">
-                    <button onclick="toggleLock()" id="lock-btn" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300" title="Lock/Unlock gallery" style="z-index: 100001 !important; position: relative;">🔒</button>
-                    <button onclick="resetPositions()" id="reset-btn" class="text-sm hover:opacity-60 px-2 h-7 flex items-center justify-center transition-opacity duration-300" title="Reset positions">Reset</button>
                     <button onclick="zoomOut()" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300">−</button>
                     <button onclick="zoomIn()" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300">+</button>
+                    <button onclick="toggleLock()" id="lock-btn" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300" title="Lock/Unlock gallery" style="z-index: 100001 !important; position: relative;">🔒</button>
+                    <button onclick="resetPositions()" id="reset-btn" class="text-sm hover:opacity-60 px-2 h-7 inline-flex items-center justify-center transition-opacity duration-300" title="Reset positions">Reset</button>
                 </div>
             </div>
         </div>
@@ -396,10 +467,10 @@
     </section>
 
     <!-- gallery  -->
-    <section id="gallery-section" class="section active" aria-labelledby="gallery-heading">
-        <main class="px-4 pt-32 md:pt-28 pb-12 mx-auto">
+    <section id="gallery-section" class="section active" aria-labelledby="gallery-heading" style="position: relative;">
+        <main class="px-2 md:px-4 pt-24 md:pt-28 pb-12 mx-auto" style="position: relative;">
             <h1 id="gallery-heading" class="sr-only">Art Gallery by w59n1</h1>
-            <div id="gallery-grid" class="grid gap-4 md:gap-8" role="list"></div>
+            <div id="gallery-grid" class="grid gap-2 md:gap-8" role="list"></div>
         </main>
     </section>
 
@@ -464,7 +535,8 @@
         };
         const MAINTENANCE_PASSWORD = "w59n1";
 
-        let zoomLevel = 6;
+        // Default zoom: 4 for mobile, 6 for desktop
+        let zoomLevel = window.innerWidth <= 768 ? 4 : 6;
         const zoomLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         let galleryUnlocked = false;
         let draggedElement = null;
@@ -472,16 +544,19 @@
         let offsetY = 0;
         let originalPositions = new Map();
         let activeSection = 'gallery';
+        let itemImageMap = new Map(); // Map items to their image data
+        let placeholders = new Map(); // Track placeholders
 
-        // Store original grid positions
+        // Store original grid positions - only store NON-positioned items
         function storeOriginalPositions() {
-            const galleryItems = document.querySelectorAll('#gallery-grid > div');
+            const galleryItems = document.querySelectorAll('#gallery-grid > div:not(.positioned)');
+            
             galleryItems.forEach((item, index) => {
                 if (!originalPositions.has(item)) {
                     const rect = item.getBoundingClientRect();
                     const parentRect = item.parentElement.getBoundingClientRect();
                     const container = item.querySelector('.aspect-square');
-                    const containerRect = container.getBoundingClientRect();
+                    const containerRect = container ? container.getBoundingClientRect() : rect;
                     
                     originalPositions.set(item, {
                         left: rect.left - parentRect.left,
@@ -496,6 +571,10 @@
 
         // Toggle lock/unlock mode
         function toggleLock() {
+            // Store current scroll position
+            const scrollY = window.scrollY;
+            const scrollX = window.scrollX;
+            
             galleryUnlocked = !galleryUnlocked;
             
             const section = document.getElementById('gallery-section');
@@ -503,22 +582,47 @@
             const lockBtn = document.getElementById('lock-btn');
             const lockBtnMobile = document.getElementById('lock-btn-mobile');
             
+            // Update UI state
             if (galleryUnlocked) {
                 section.classList.add('gallery-unlocked');
                 body.classList.add('gallery-unlocked');
                 if (lockBtn) lockBtn.textContent = '🔓';
                 if (lockBtnMobile) lockBtnMobile.textContent = '🔓';
-                
-                storeOriginalPositions();
-                initializeUnlockedMode();
             } else {
                 section.classList.remove('gallery-unlocked');
                 body.classList.remove('gallery-unlocked');
                 if (lockBtn) lockBtn.textContent = '🔒';
                 if (lockBtnMobile) lockBtnMobile.textContent = '🔒';
-                
-                restoreClickHandlers();
             }
+            
+            // Restore scroll position to prevent any shifts
+            window.scrollTo(scrollX, scrollY);
+            
+            // Update click handlers
+            const galleryItems = document.querySelectorAll('#gallery-grid > div');
+            galleryItems.forEach((item) => {
+                const imageData = itemImageMap.get(item);
+                if (!imageData) return;
+                
+                if (galleryUnlocked) {
+                    // Remove click handler when unlocked
+                    item.onclick = null;
+                    
+                    // Ensure drag handlers are attached
+                    if (!item.hasAttribute('data-drag-initialized')) {
+                        item.addEventListener('mousedown', startDrag);
+                        item.addEventListener('touchstart', startDrag, { passive: false });
+                        item.setAttribute('data-drag-initialized', 'true');
+                    }
+                } else {
+                    // Restore click handler when locked
+                    item.onclick = (e) => {
+                        if (!dragging) {
+                            openLightbox(imageData.url, imageData.title, imageData.description, imageData.alt);
+                        }
+                    };
+                }
+            });
         }
 
         // Keyboard zoom with Ctrl+Scroll
@@ -527,91 +631,95 @@
                 e.preventDefault();
                 
                 if (e.deltaY < 0) {
-                    // Scroll up = zoom in (fewer columns)
                     zoomIn();
                 } else {
-                    // Scroll down = zoom out (more columns)
                     zoomOut();
                 }
             }
         }, { passive: false });
-
-        // Initialize unlocked mode
-        function initializeUnlockedMode() {
-            const galleryItems = document.querySelectorAll('#gallery-grid > div');
-            
-            galleryItems.forEach((item) => {
-                // DON'T position items - let them stay in grid
-                // Just remove lightbox click and add drag handlers
-                item.onclick = null;
-                
-                // Add drag handlers
-                if (!item.hasAttribute('data-drag-initialized')) {
-                    item.addEventListener('mousedown', startDrag);
-                    item.addEventListener('touchstart', startDrag);
-                    item.setAttribute('data-drag-initialized', 'true');
-                }
-            });
-        }
-
-        // Restore click handlers when locked
-        function restoreClickHandlers() {
-            const galleryItems = document.querySelectorAll('#gallery-grid > div');
-            galleryItems.forEach((item, index) => {
-                const imageData = images[index];
-                if (imageData) {
-                    item.onclick = () => openLightbox(imageData.url, imageData.title, imageData.description, imageData.alt);
-                }
-            });
-        }
 
         // Reset all positions to original
         function resetPositions() {
             const galleryItems = document.querySelectorAll('#gallery-grid > div');
             
             galleryItems.forEach((item) => {
-                const original = originalPositions.get(item);
-                if (original) {
-                    item.style.left = original.left + 'px';
-                    item.style.top = original.top + 'px';
-                    item.style.width = original.width + 'px';
-                    item.style.height = original.height + 'px';
-                    
-                    const container = item.querySelector('.aspect-square');
-                    if (container) {
-                        container.style.width = '100%';
-                        container.style.height = '100%';
-                    }
+                // Remove positioned class and ALL inline styles
+                item.classList.remove('positioned');
+                item.removeAttribute('style');
+                
+                const container = item.querySelector('.aspect-square');
+                if (container) {
+                    container.removeAttribute('style');
+                }
+                
+                const img = item.querySelector('img');
+                if (img) {
+                    img.style.pointerEvents = '';
+                }
+                
+                // Remove placeholder if exists
+                const placeholder = placeholders.get(item);
+                if (placeholder && placeholder.parentNode) {
+                    placeholder.parentNode.removeChild(placeholder);
+                }
+                placeholders.delete(item);
+            });
+            
+            // Clear all tracking
+            originalPositions.clear();
+            zIndexCounter = 100;
+            
+            // Restore proper click handlers based on current lock state
+            galleryItems.forEach((item) => {
+                const imageData = itemImageMap.get(item);
+                if (!imageData) return;
+                
+                if (!galleryUnlocked) {
+                    // If locked, restore click handlers
+                    item.onclick = () => openLightbox(imageData.url, imageData.title, imageData.description, imageData.alt);
+                } else {
+                    // If unlocked, remove click handlers
+                    item.onclick = null;
                 }
             });
         }
 
-        // Ultra-simplified drag - ZERO LAG
+        // Ultra-simplified drag
         let dragging = false;
         let startX, startY, initialLeft, initialTop;
-        let placeholder = null;
-        let zIndexCounter = 100; // Start at 100, increment each time
+        let zIndexCounter = 100;
 
         function startDrag(e) {
             if (!galleryUnlocked) return;
             
             const target = e.currentTarget;
+            
+            // If already positioned, get current rect, otherwise get natural rect
             const rect = target.getBoundingClientRect();
             const clickX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
             const clickY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
             
-            // If clicking resize corner, don't drag
-            if (clickX > rect.width - 30 && clickY > rect.height - 30) {
+            // If clicking resize corner on desktop, don't drag
+            if (window.innerWidth > 768 && target.classList.contains('positioned') && clickX > rect.width - 30 && clickY > rect.height - 30) {
                 return;
             }
             
             e.preventDefault();
+            e.stopPropagation();
+            
+            // Prevent body scroll on mobile while dragging
+            if (window.innerWidth <= 768) {
+                document.body.style.overflow = 'hidden';
+                document.body.style.position = 'fixed';
+                document.body.style.width = '100%';
+            }
             
             dragging = true;
             draggedElement = target;
             
-            // Bring this image to front
+            // Bring this image to front (but keep below lightbox z-index of 100000)
             zIndexCounter++;
+            if (zIndexCounter > 9999) zIndexCounter = 100; // Reset if too high
             draggedElement.style.zIndex = zIndexCounter;
             
             // If not yet positioned, position it now and create placeholder
@@ -620,7 +728,7 @@
                 const itemRect = draggedElement.getBoundingClientRect();
                 
                 // Create invisible placeholder to maintain grid space
-                placeholder = document.createElement('div');
+                const placeholder = document.createElement('div');
                 placeholder.style.width = itemRect.width + 'px';
                 placeholder.style.height = itemRect.height + 'px';
                 placeholder.style.visibility = 'hidden';
@@ -628,8 +736,9 @@
                 
                 // Insert placeholder before removing from grid
                 draggedElement.parentNode.insertBefore(placeholder, draggedElement);
+                placeholders.set(draggedElement, placeholder);
                 
-                // Now position the element absolutely
+                // Now position the element absolutely AT ITS CURRENT LOCATION
                 draggedElement.style.position = 'absolute';
                 draggedElement.style.left = (itemRect.left - parentRect.left) + 'px';
                 draggedElement.style.top = (itemRect.top - parentRect.top) + 'px';
@@ -653,7 +762,7 @@
             initialTop = parseFloat(draggedElement.style.top) || 0;
             
             document.addEventListener('mousemove', drag);
-            document.addEventListener('touchmove', drag);
+            document.addEventListener('touchmove', drag, { passive: false });
             document.addEventListener('mouseup', endDrag);
             document.addEventListener('touchend', endDrag);
         }
@@ -661,6 +770,7 @@
         function drag(e) {
             if (!dragging || !draggedElement) return;
             e.preventDefault();
+            e.stopPropagation();
             
             const currentX = e.touches ? e.touches[0].clientX : e.clientX;
             const currentY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -668,11 +778,29 @@
             const dx = currentX - startX;
             const dy = currentY - startY;
             
-            draggedElement.style.left = (initialLeft + dx) + 'px';
-            draggedElement.style.top = (initialTop + dy) + 'px';
+            const newLeft = initialLeft + dx;
+            const newTop = initialTop + dy;
+            
+            // On mobile, constrain to viewport
+            if (window.innerWidth <= 768) {
+                const maxLeft = window.innerWidth - 100; // Keep at least 100px visible
+                const constrainedLeft = Math.max(-50, Math.min(newLeft, maxLeft));
+                draggedElement.style.left = constrainedLeft + 'px';
+                draggedElement.style.top = newTop + 'px';
+            } else {
+                draggedElement.style.left = newLeft + 'px';
+                draggedElement.style.top = newTop + 'px';
+            }
         }
 
         function endDrag() {
+            // Restore body scroll on mobile
+            if (window.innerWidth <= 768) {
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.width = '';
+            }
+            
             if (draggedElement) {
                 draggedElement.classList.remove('dragging');
                 draggedElement = null;
@@ -699,7 +827,7 @@
             try {
                 localStorage.setItem('currentSection', section);
             } catch (e) {
-                // Ignore localStorage errors (e.g., in file:// protocol or private browsing)
+                // Ignore localStorage errors
             }
             
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -738,14 +866,14 @@
                 lazyLoadBlogImages();
             }
 
-            // Update URL without page reload (for better UX and analytics)
+            // Update URL without page reload
             try {
                 if (history.pushState) {
                     const url = section === 'gallery' ? '/' : `/#${section}`;
                     history.pushState({section: section}, '', url);
                 }
             } catch (e) {
-                // Ignore history errors (e.g., in file:// protocol)
+                // Ignore history errors
             }
         }
 
@@ -795,7 +923,10 @@
                 10: 'grid-cols-10'
             };
             
-            gallery.className = `grid gap-4 md:gap-8 ${gridClasses[zoomLevel]}`;
+            gallery.className = `grid gap-2 md:gap-8 ${gridClasses[zoomLevel]}`;
+            
+            // Don't recalculate positions for already-positioned items
+            // Only store positions for grid items
         }
 
         // Image data with SEO-friendly alt text
@@ -880,7 +1011,7 @@
             rootMargin: '50px'
         });
 
-        // Initialize gallery with lazy loading and SEO-friendly markup
+        // Initialize gallery with immediate loading for faster display
         const gallery = document.getElementById('gallery-grid');
         updateGalleryGrid();
         
@@ -889,19 +1020,19 @@
             div.className = 'cursor-pointer';
             div.setAttribute('role', 'listitem');
             div.innerHTML = `
-                <div class="aspect-square overflow-hidden bg-gray-50 image-loading">
-                    <img data-src="${image.url}" 
+                <div class="aspect-square overflow-hidden bg-gray-50">
+                    <img src="${image.url}" 
                          alt="${image.alt}" 
                          title="${image.title}"
-                         class="w-full h-full object-cover"
-                         ${index < 4 ? '' : 'loading="lazy"'}>
+                         class="w-full h-full object-cover loaded">
                 </div>
             `;
+            
+            // Store mapping between div and image data
+            itemImageMap.set(div, image);
+            
             div.onclick = () => openLightbox(image.url, image.title, image.description, image.alt);
             gallery.appendChild(div);
-            
-            const img = div.querySelector('img');
-            imageObserver.observe(img);
         });
 
         // Lazy load blog images
@@ -958,6 +1089,7 @@
                 lightboxDescription.innerHTML = '';
             }
             
+            document.body.classList.add('lightbox-open');
             lightbox.classList.remove('hidden');
             setTimeout(() => lightbox.classList.add('show'), 10);
         }
@@ -965,6 +1097,7 @@
         function closeLightbox() {
             const lightbox = document.getElementById('lightbox');
             lightbox.classList.remove('show');
+            document.body.classList.remove('lightbox-open');
             setTimeout(() => lightbox.classList.add('hidden'), 400);
         }
 
@@ -1044,18 +1177,16 @@
             }
         });
 
-        // Preload critical images
-        window.addEventListener('load', function() {
-            const firstImages = Array.from(gallery.querySelectorAll('img')).slice(0, 4);
-            firstImages.forEach(img => {
-                const src = img.getAttribute('data-src');
-                if (src) {
-                    img.src = src;
-                    img.removeAttribute('data-src');
-                    img.classList.add('loaded');
-                    img.parentElement.classList.remove('image-loading');
-                }
-            });
+        // Adjust zoom level on resize
+        window.addEventListener('resize', function() {
+            const isMobile = window.innerWidth <= 768;
+            const expectedZoom = isMobile ? 4 : 6;
+            
+            // Only reset if significantly different
+            if (Math.abs(zoomLevel - expectedZoom) > 2) {
+                zoomLevel = expectedZoom;
+                updateGalleryGrid();
+            }
         });
     </script>
 </body>
