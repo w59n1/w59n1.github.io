@@ -91,17 +91,13 @@
         html {
             overflow-x: hidden;
             width: 100%;
-            position: fixed;
-            height: 100%;
         }
         body {
             margin: 0;
             padding: 0;
             overflow-x: hidden;
-            overflow-y: auto;
             width: 100%;
             position: relative;
-            height: 100%;
             -webkit-overflow-scrolling: touch;
             /* Text stretch on desktop */
             font-stretch: 200%;
@@ -109,13 +105,16 @@
         }
         /* Mobile specific fixes */
         @media (max-width: 768px) {
+            html, body {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
+                position: relative;
+            }
             body {
                 font-stretch: 150%;
                 letter-spacing: 0.2em;
-                position: relative;
-                overflow-x: hidden !important;
                 width: 100vw;
-                max-width: 100vw;
+                touch-action: pan-y; /* Only allow vertical scrolling */
             }
             #blog-posts, #blog-posts *, 
             #gallery-section, #gallery-section * {
@@ -130,6 +129,7 @@
             #gallery-grid {
                 width: 100%;
                 max-width: 100%;
+                overflow: visible;
             }
             /* Ensure main containers don't overflow */
             main {
@@ -140,6 +140,11 @@
             /* Positioned items stay within viewport */
             #gallery-grid > div.positioned {
                 max-width: calc(100vw - 2rem) !important;
+            }
+            /* Ensure sections don't overflow */
+            .section {
+                overflow-x: hidden;
+                max-width: 100vw;
             }
         }
         /* Desktop text stretch */
@@ -241,6 +246,12 @@
             background: white;
             width: 100%;
             margin-top: auto;
+            position: relative;
+        }
+        @media (max-width: 768px) {
+            footer {
+                padding-bottom: env(safe-area-inset-bottom, 0); /* Account for notch on iPhone */
+            }
         }
         #unlock-tutorial.hidden {
             display: none;
@@ -278,6 +289,18 @@
             .gallery-unlocked #gallery-grid > div.positioned {
                 resize: both !important;
                 overflow: hidden;
+            }
+            /* Show resize handle indicator on mobile */
+            .gallery-unlocked #gallery-grid > div.positioned::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                width: 20px;
+                height: 20px;
+                background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.3) 50%);
+                cursor: nwse-resize;
+                pointer-events: auto;
             }
             body:not(.gallery-unlocked) #gallery-grid > div.positioned {
                 resize: none !important;
@@ -695,10 +718,11 @@
             const clickX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
             const clickY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
             
-            // If clicking resize corner (bottom-right 40px zone), don't drag
+            // If clicking resize corner (bottom-right zone), don't drag
+            const resizeZoneSize = window.innerWidth <= 768 ? 30 : 40; // Smaller zone on mobile
             const isResizeZone = target.classList.contains('positioned') && 
-                                 clickX > rect.width - 40 && 
-                                 clickY > rect.height - 40;
+                                 clickX > rect.width - resizeZoneSize && 
+                                 clickY > rect.height - resizeZoneSize;
             
             if (isResizeZone) {
                 return;
@@ -706,13 +730,6 @@
             
             e.preventDefault();
             e.stopPropagation();
-            
-            // Prevent body scroll on mobile while dragging
-            if (window.innerWidth <= 768) {
-                document.body.style.overflow = 'hidden';
-                document.body.style.position = 'fixed';
-                document.body.style.width = '100%';
-            }
             
             dragging = true;
             draggedElement = target;
@@ -794,13 +811,6 @@
         }
 
         function endDrag() {
-            // Restore body scroll on mobile
-            if (window.innerWidth <= 768) {
-                document.body.style.overflow = '';
-                document.body.style.position = '';
-                document.body.style.width = '';
-            }
-            
             if (draggedElement) {
                 draggedElement.classList.remove('dragging');
                 draggedElement = null;
