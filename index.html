@@ -195,23 +195,15 @@
         button, a, nav button {
             transition: opacity 0.3s ease;
         }
-        /* Ensure reset button shows when unlocked - use visibility to prevent layout shift */
+        /* Reset button always visible */
         #reset-btn {
-            visibility: hidden;
             width: 60px; /* Fixed width to maintain spacing */
             font-size: 0.875rem;
             padding: 0 0.5rem;
             height: 1.75rem;
         }
-        body.gallery-unlocked #reset-btn {
-            visibility: visible;
-        }
         #reset-btn-mobile {
-            visibility: hidden;
             width: 45px; /* Fixed width for mobile */
-        }
-        body.gallery-unlocked #reset-btn-mobile {
-            visibility: visible;
         }
         /* Stretch navigation buttons */
         nav button, #tab-contact, #tab-contact-mobile {
@@ -281,9 +273,13 @@
         #lightbox {
             z-index: 100000 !important;
         }
-        /* Mobile: disable resize */
+        /* Mobile: enable resize when unlocked */
         @media (max-width: 768px) {
-            #gallery-grid > div.positioned {
+            .gallery-unlocked #gallery-grid > div.positioned {
+                resize: both !important;
+                overflow: hidden;
+            }
+            body:not(.gallery-unlocked) #gallery-grid > div.positioned {
                 resize: none !important;
             }
         }
@@ -535,8 +531,7 @@
         };
         const MAINTENANCE_PASSWORD = "w59n1";
 
-        // Default zoom: 4 for mobile, 6 for desktop
-        let zoomLevel = window.innerWidth <= 768 ? 4 : 6;
+        let zoomLevel = window.innerWidth <= 768 ? 3 : 6;
         const zoomLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         let galleryUnlocked = false;
         let draggedElement = null;
@@ -546,6 +541,7 @@
         let activeSection = 'gallery';
         let itemImageMap = new Map(); // Map items to their image data
         let placeholders = new Map(); // Track placeholders
+        let previousZoomLevel = zoomLevel; // Track zoom level changes
 
         // Store original grid positions - only store NON-positioned items
         function storeOriginalPositions() {
@@ -699,8 +695,12 @@
             const clickX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
             const clickY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
             
-            // If clicking resize corner on desktop, don't drag
-            if (window.innerWidth > 768 && target.classList.contains('positioned') && clickX > rect.width - 30 && clickY > rect.height - 30) {
+            // If clicking resize corner (bottom-right 40px zone), don't drag
+            const isResizeZone = target.classList.contains('positioned') && 
+                                 clickX > rect.width - 40 && 
+                                 clickY > rect.height - 40;
+            
+            if (isResizeZone) {
                 return;
             }
             
@@ -895,17 +895,79 @@
         function zoomIn() {
             const currentIndex = zoomLevels.indexOf(zoomLevel);
             if (currentIndex > 0) {
+                const oldZoom = zoomLevel;
                 zoomLevel = zoomLevels[currentIndex - 1];
                 updateGalleryGrid();
+                
+                // Wait for grid to update, then scale positioned items
+                setTimeout(() => {
+                    scalePositionedItems(oldZoom, zoomLevel);
+                }, 50);
             }
         }
 
         function zoomOut() {
             const currentIndex = zoomLevels.indexOf(zoomLevel);
             if (currentIndex < zoomLevels.length - 1) {
+                const oldZoom = zoomLevel;
                 zoomLevel = zoomLevels[currentIndex + 1];
                 updateGalleryGrid();
+                
+                // Wait for grid to update, then scale positioned items
+                setTimeout(() => {
+                    scalePositionedItems(oldZoom, zoomLevel);
+                }, 50);
             }
+        }
+
+        function scalePositionedItems(oldZoom, newZoom) {
+            const positionedItems = document.querySelectorAll('#gallery-grid > div.positioned');
+            
+            if (positionedItems.length === 0) return;
+            
+            // Get a reference grid item to calculate the grid cell size at both zoom levels
+            const nonPositioned = document.querySelectorAll('#gallery-grid > div:not(.positioned)');
+            if (nonPositioned.length === 0) return;
+            
+            // Calculate approximate cell width for old and new zoom
+            const gallery = document.getElementById('gallery-grid');
+            const galleryWidth = gallery.getBoundingClientRect().width;
+            const isMobile = window.innerWidth <= 768;
+            const gap = isMobile ? 8 : 32; // gap-2 = 8px, gap-8 = 32px
+            
+            // Calculate cell width at old zoom level
+            const oldCellWidth = (galleryWidth - (gap * (oldZoom - 1))) / oldZoom;
+            
+            // Calculate cell width at new zoom level  
+            const newCellWidth = (galleryWidth - (gap * (newZoom - 1))) / newZoom;
+            
+            // Scale factor based on actual cell size change
+            const scaleFactor = newCellWidth / oldCellWidth;
+            
+            positionedItems.forEach(item => {
+                const currentLeft = parseFloat(item.style.left) || 0;
+                const currentTop = parseFloat(item.style.top) || 0;
+                const currentWidth = parseFloat(item.style.width) || 0;
+                const currentHeight = parseFloat(item.style.height) || 0;
+                
+                // Scale everything proportionally based on grid cell size
+                const newLeft = currentLeft * scaleFactor;
+                const newTop = currentTop * scaleFactor;
+                const newWidth = currentWidth * scaleFactor;
+                const newHeight = currentHeight * scaleFactor;
+                
+                item.style.left = newLeft + 'px';
+                item.style.top = newTop + 'px';
+                item.style.width = newWidth + 'px';
+                item.style.height = newHeight + 'px';
+                
+                // Update placeholder size to match new grid cell
+                const placeholder = placeholders.get(item);
+                if (placeholder) {
+                    placeholder.style.width = newCellWidth + 'px';
+                    placeholder.style.height = newCellWidth + 'px'; // Square placeholder
+                }
+            });
         }
 
         function updateGalleryGrid() {
@@ -925,8 +987,8 @@
             
             gallery.className = `grid gap-2 md:gap-8 ${gridClasses[zoomLevel]}`;
             
-            // Don't recalculate positions for already-positioned items
-            // Only store positions for grid items
+            // Force reflow to ensure layout is calculated
+            void gallery.offsetHeight;
         }
 
         // Image data with SEO-friendly alt text
@@ -1180,12 +1242,14 @@
         // Adjust zoom level on resize
         window.addEventListener('resize', function() {
             const isMobile = window.innerWidth <= 768;
-            const expectedZoom = isMobile ? 4 : 6;
+            const expectedZoom = isMobile ? 3 : 6;
             
             // Only reset if significantly different
             if (Math.abs(zoomLevel - expectedZoom) > 2) {
+                const oldZoom = zoomLevel;
                 zoomLevel = expectedZoom;
                 updateGalleryGrid();
+                scalePositionedItems(oldZoom, zoomLevel);
             }
         });
     </script>
