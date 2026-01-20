@@ -887,16 +887,27 @@
             document.querySelector('header').style.backgroundColor = defaultBgColor;
             document.querySelector('footer').style.backgroundColor = defaultBgColor;
             
+            // Reset lightbox background
+            const lightbox = document.getElementById('lightbox');
+            if (lightbox) {
+                lightbox.style.backgroundColor = defaultBgColor;
+            }
+            
             // Reset all sections
             document.querySelectorAll('.section').forEach(section => {
                 section.style.color = defaultTextColor;
             });
             
-            // Reset all text elements
-            document.querySelectorAll('p, div, span, a, button, label, h1, h2, h3, nav').forEach(el => {
+            // Reset all text elements including time tags
+            document.querySelectorAll('p, div, span, a, button, label, h1, h2, h3, nav, time').forEach(el => {
                 if (!el.closest('#color-picker')) {
                     el.style.color = defaultTextColor;
                 }
+            });
+            
+            // Reset blog post dates specifically
+            document.querySelectorAll('#blog-posts time').forEach(timeEl => {
+                timeEl.style.color = defaultTextColor;
             });
             
             // Reset color indicator circles
@@ -1113,6 +1124,12 @@
             document.querySelector('header').style.backgroundColor = color;
             document.querySelector('footer').style.backgroundColor = color;
             
+            // Update lightbox background if it exists
+            const lightbox = document.getElementById('lightbox');
+            if (lightbox) {
+                lightbox.style.backgroundColor = color;
+            }
+            
             // Update the color indicator circles
             const indicator = document.getElementById('color-indicator');
             const indicatorMobile = document.getElementById('color-indicator-mobile');
@@ -1135,11 +1152,16 @@
             });
             
             // Apply to specific text elements, excluding color picker
-            document.querySelectorAll('p, div, span, a, button, label, h1, h2, h3, nav').forEach(el => {
+            document.querySelectorAll('p, div, span, a, button, label, h1, h2, h3, nav, time').forEach(el => {
                 // Don't override color picker elements
                 if (!el.closest('#color-picker')) {
                     el.style.color = color;
                 }
+            });
+            
+            // Specifically target blog post dates/times
+            document.querySelectorAll('#blog-posts time').forEach(timeEl => {
+                timeEl.style.color = color;
             });
             
             updateSwatchSelection();
@@ -1321,7 +1343,8 @@
         // Image data with SEO-friendly alt text
         const images = [
             { id: 1, url: 'images/NYAN.jpg', title: 'Nyan', description: 'Nyan\n1417x1417\n01/13/2026', alt: 'Nyan' },
-            { id: 2, url: 'images/makeitcount.jpg', title: 'Make it Count', description: 'Make it Count\n1417x1417\n01/10/2026', alt: 'Make it Count' },
+            { id: 2, url: 'images/whoreshoot.jpg', title: 'Whore', description: 'Whore\n1417x1417\n01/11/2026', alt: 'Whore' },
+            { id: 2, url: 'images/makeitcount.jpg', title: 'Make it Count', description: 'Make it Count\n1417x1417\n01/10/2026', alt: 'Make it Count' },            
             { id: 3, url: 'images/TRASHWORLD.jpg', title: 'My Trash World', description: 'My Trash World\n1417x1417\n01/07/2026', alt: 'My Trash World' },
             { id: 4, url: 'images/overtoolate.jpg', title: 'Over Too Late', description: 'Over Too Late\n1417x1417\n01/07/2026', alt: 'Over Too Late' },
             { id: 5, url: 'images/vivalapsycho.jpg', title: 'Viva La Psycho', description: 'Viva La Psycho\n1417x1417\n01/03/2026', alt: 'Viva La Psycho' },
@@ -1337,17 +1360,6 @@
         ];
 
         const blogPosts = [
-            {
-                date: '01/19/2026 10:18 pm',
-                title: 'Color Changer / big fixes',
-                content: 'Okay so now both mobile and desktop image tweak work as intended, also I added a super cool color change function. Just click the circle, and you can change the text and background colors to whatever you want!',
-                media: [
-                    { type: 'image', url: 'images/update1.png', alt: 'update1' },
-                    { type: 'image', url: 'images/update2.png', alt: 'update2' },
-                    { type: 'image', url: 'images/update3.png', alt: 'update3' },
-                    { type: 'image', url: 'images/update4.png', alt: 'update4' },                    
-                ]
-            },                        
             {
                 date: '01/19/2026 12:43 am',
                 title: 'Website Update',
@@ -1450,6 +1462,9 @@
             const lightboxDescription = document.getElementById('lightbox-description');
             lightboxImage.src = url;
             lightboxImage.alt = alt || title;
+            
+            // Set lightbox background to match current background color
+            lightbox.style.backgroundColor = currentBgColor;
             
             if (description) {
                 const lines = description.split('\n').filter(line => line.trim());
