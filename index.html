@@ -320,6 +320,7 @@
             display: block;
             font-size: 0.75rem;
             margin-bottom: 0.4rem;
+            color: black !important;
         }
         .color-swatches {
             display: grid;
@@ -361,7 +362,8 @@
             flex: 1;
             padding: 0.4rem;
             border: 1px solid black;
-            background: white;
+            background: white !important;
+            color: black !important;
             cursor: pointer;
             font-size: 0.75rem;
         }
@@ -625,88 +627,88 @@
         <div class="color-input-group">
             <label for="bg-color-swatches">Background</label>
             <div id="bg-color-swatches" class="color-swatches">
-                <!-- Row 1: Whites and Grays -->
+                <!-- Row 1: Black, White, Grays -->
+                <div class="color-swatch" style="background: #000000;" onclick="selectBgColor('#000000')"></div>
                 <div class="color-swatch" style="background: #ffffff;" onclick="selectBgColor('#ffffff')"></div>
-                <div class="color-swatch" style="background: #f0f0f0;" onclick="selectBgColor('#f0f0f0')"></div>
+                <div class="color-swatch" style="background: #333333;" onclick="selectBgColor('#333333')"></div>
+                <div class="color-swatch" style="background: #666666;" onclick="selectBgColor('#666666')"></div>
+                <div class="color-swatch" style="background: #999999;" onclick="selectBgColor('#999999')"></div>
+                <!-- Row 2: Light Grays -->
+                <div class="color-swatch" style="background: #cccccc;" onclick="selectBgColor('#cccccc')"></div>
                 <div class="color-swatch" style="background: #e0e0e0;" onclick="selectBgColor('#e0e0e0')"></div>
-                <div class="color-swatch" style="background: #d0d0d0;" onclick="selectBgColor('#d0d0d0')"></div>
-                <div class="color-swatch" style="background: #c0c0c0;" onclick="selectBgColor('#c0c0c0')"></div>
-                <!-- Row 2: Bright Reds -->
+                <div class="color-swatch" style="background: #f0f0f0;" onclick="selectBgColor('#f0f0f0')"></div>
+                <div class="color-swatch" style="background: #f5f5f5;" onclick="selectBgColor('#f5f5f5')"></div>
+                <div class="color-swatch" style="background: #fafafa;" onclick="selectBgColor('#fafafa')"></div>
+                <!-- Row 3: Reds (dark to light) -->
+                <div class="color-swatch" style="background: #8b0000;" onclick="selectBgColor('#8b0000')"></div>
+                <div class="color-swatch" style="background: #cc0000;" onclick="selectBgColor('#cc0000')"></div>
                 <div class="color-swatch" style="background: #ff0000;" onclick="selectBgColor('#ff0000')"></div>
-                <div class="color-swatch" style="background: #ff3333;" onclick="selectBgColor('#ff3333')"></div>
                 <div class="color-swatch" style="background: #ff6666;" onclick="selectBgColor('#ff6666')"></div>
-                <div class="color-swatch" style="background: #ff9999;" onclick="selectBgColor('#ff9999')"></div>
                 <div class="color-swatch" style="background: #ffcccc;" onclick="selectBgColor('#ffcccc')"></div>
-                <!-- Row 3: Oranges and Yellows -->
+                <!-- Row 4: Oranges/Yellows (dark to light) -->
+                <div class="color-swatch" style="background: #cc6600;" onclick="selectBgColor('#cc6600')"></div>
                 <div class="color-swatch" style="background: #ff6600;" onclick="selectBgColor('#ff6600')"></div>
                 <div class="color-swatch" style="background: #ff9933;" onclick="selectBgColor('#ff9933')"></div>
                 <div class="color-swatch" style="background: #ffcc00;" onclick="selectBgColor('#ffcc00')"></div>
                 <div class="color-swatch" style="background: #ffff00;" onclick="selectBgColor('#ffff00')"></div>
-                <div class="color-swatch" style="background: #ffff99;" onclick="selectBgColor('#ffff99')"></div>
-                <!-- Row 4: Greens -->
+                <!-- Row 5: Greens (dark to light) -->
+                <div class="color-swatch" style="background: #006600;" onclick="selectBgColor('#006600')"></div>
+                <div class="color-swatch" style="background: #009900;" onclick="selectBgColor('#009900')"></div>
                 <div class="color-swatch" style="background: #00ff00;" onclick="selectBgColor('#00ff00')"></div>
-                <div class="color-swatch" style="background: #33ff33;" onclick="selectBgColor('#33ff33')"></div>
                 <div class="color-swatch" style="background: #66ff66;" onclick="selectBgColor('#66ff66')"></div>
-                <div class="color-swatch" style="background: #99ff99;" onclick="selectBgColor('#99ff99')"></div>
                 <div class="color-swatch" style="background: #ccffcc;" onclick="selectBgColor('#ccffcc')"></div>
-                <!-- Row 5: Cyans and Blues -->
-                <div class="color-swatch" style="background: #00ffff;" onclick="selectBgColor('#00ffff')"></div>
-                <div class="color-swatch" style="background: #0099ff;" onclick="selectBgColor('#0099ff')"></div>
-                <div class="color-swatch" style="background: #0066ff;" onclick="selectBgColor('#0066ff')"></div>
+                <!-- Row 6: Cyans/Blues (dark to light) -->
+                <div class="color-swatch" style="background: #000099;" onclick="selectBgColor('#000099')"></div>
                 <div class="color-swatch" style="background: #0000ff;" onclick="selectBgColor('#0000ff')"></div>
-                <div class="color-swatch" style="background: #9999ff;" onclick="selectBgColor('#9999ff')"></div>
-                <!-- Row 6: Purples and Pinks -->
+                <div class="color-swatch" style="background: #0099ff;" onclick="selectBgColor('#0099ff')"></div>
+                <div class="color-swatch" style="background: #00ffff;" onclick="selectBgColor('#00ffff')"></div>
+                <div class="color-swatch" style="background: #ccffff;" onclick="selectBgColor('#ccffff')"></div>
+                <!-- Row 7: Purples/Pinks (dark to light) -->
+                <div class="color-swatch" style="background: #660099;" onclick="selectBgColor('#660099')"></div>
                 <div class="color-swatch" style="background: #9900ff;" onclick="selectBgColor('#9900ff')"></div>
-                <div class="color-swatch" style="background: #cc00ff;" onclick="selectBgColor('#cc00ff')"></div>
                 <div class="color-swatch" style="background: #ff00ff;" onclick="selectBgColor('#ff00ff')"></div>
                 <div class="color-swatch" style="background: #ff66ff;" onclick="selectBgColor('#ff66ff')"></div>
                 <div class="color-swatch" style="background: #ffccff;" onclick="selectBgColor('#ffccff')"></div>
-                <!-- Row 7: More Vibrant Options -->
-                <div class="color-swatch" style="background: #ff0099;" onclick="selectBgColor('#ff0099')"></div>
-                <div class="color-swatch" style="background: #00ff99;" onclick="selectBgColor('#00ff99')"></div>
-                <div class="color-swatch" style="background: #ff9900;" onclick="selectBgColor('#ff9900')"></div>
-                <div class="color-swatch" style="background: #99ff00;" onclick="selectBgColor('#99ff00')"></div>
-                <div class="color-swatch" style="background: #000000;" onclick="selectBgColor('#000000')"></div>
             </div>
         </div>
         <div class="color-input-group">
             <label for="text-color-swatches">Text</label>
             <div id="text-color-swatches" class="color-swatches">
-                <!-- Row 1: Basic Black, White, Grays -->
+                <!-- Row 1: Black, White, Grays -->
                 <div class="color-swatch" style="background: #000000;" onclick="selectTextColor('#000000')"></div>
+                <div class="color-swatch" style="background: #ffffff;" onclick="selectTextColor('#ffffff')"></div>
                 <div class="color-swatch" style="background: #333333;" onclick="selectTextColor('#333333')"></div>
                 <div class="color-swatch" style="background: #666666;" onclick="selectTextColor('#666666')"></div>
                 <div class="color-swatch" style="background: #999999;" onclick="selectTextColor('#999999')"></div>
-                <div class="color-swatch" style="background: #ffffff;" onclick="selectTextColor('#ffffff')"></div>
-                <!-- Row 2: Bright Reds -->
-                <div class="color-swatch" style="background: #ff0000;" onclick="selectTextColor('#ff0000')"></div>
-                <div class="color-swatch" style="background: #cc0000;" onclick="selectTextColor('#cc0000')"></div>
-                <div class="color-swatch" style="background: #990000;" onclick="selectTextColor('#990000')"></div>
+                <!-- Row 2: Reds (dark to light) -->
                 <div class="color-swatch" style="background: #660000;" onclick="selectTextColor('#660000')"></div>
+                <div class="color-swatch" style="background: #990000;" onclick="selectTextColor('#990000')"></div>
+                <div class="color-swatch" style="background: #cc0000;" onclick="selectTextColor('#cc0000')"></div>
+                <div class="color-swatch" style="background: #ff0000;" onclick="selectTextColor('#ff0000')"></div>
                 <div class="color-swatch" style="background: #ff3366;" onclick="selectTextColor('#ff3366')"></div>
-                <!-- Row 3: Oranges and Yellows -->
+                <!-- Row 3: Oranges/Yellows (dark to light) -->
+                <div class="color-swatch" style="background: #663300;" onclick="selectTextColor('#663300')"></div>
+                <div class="color-swatch" style="background: #996600;" onclick="selectTextColor('#996600')"></div>
                 <div class="color-swatch" style="background: #ff6600;" onclick="selectTextColor('#ff6600')"></div>
                 <div class="color-swatch" style="background: #ff9900;" onclick="selectTextColor('#ff9900')"></div>
                 <div class="color-swatch" style="background: #ffcc00;" onclick="selectTextColor('#ffcc00')"></div>
-                <div class="color-swatch" style="background: #ccaa00;" onclick="selectTextColor('#ccaa00')"></div>
-                <div class="color-swatch" style="background: #998800;" onclick="selectTextColor('#998800')"></div>
-                <!-- Row 4: Greens -->
-                <div class="color-swatch" style="background: #00ff00;" onclick="selectTextColor('#00ff00')"></div>
-                <div class="color-swatch" style="background: #00cc00;" onclick="selectTextColor('#00cc00')"></div>
-                <div class="color-swatch" style="background: #009900;" onclick="selectTextColor('#009900')"></div>
+                <!-- Row 4: Greens (dark to light) -->
+                <div class="color-swatch" style="background: #003300;" onclick="selectTextColor('#003300')"></div>
                 <div class="color-swatch" style="background: #006600;" onclick="selectTextColor('#006600')"></div>
-                <div class="color-swatch" style="background: #00ff99;" onclick="selectTextColor('#00ff99')"></div>
-                <!-- Row 5: Blues -->
-                <div class="color-swatch" style="background: #00ffff;" onclick="selectTextColor('#00ffff')"></div>
-                <div class="color-swatch" style="background: #0099ff;" onclick="selectTextColor('#0099ff')"></div>
-                <div class="color-swatch" style="background: #0066ff;" onclick="selectTextColor('#0066ff')"></div>
-                <div class="color-swatch" style="background: #0000ff;" onclick="selectTextColor('#0000ff')"></div>
+                <div class="color-swatch" style="background: #009900;" onclick="selectTextColor('#009900')"></div>
+                <div class="color-swatch" style="background: #00cc00;" onclick="selectTextColor('#00cc00')"></div>
+                <div class="color-swatch" style="background: #00ff00;" onclick="selectTextColor('#00ff00')"></div>
+                <!-- Row 5: Blues (dark to light) -->
+                <div class="color-swatch" style="background: #000066;" onclick="selectTextColor('#000066')"></div>
                 <div class="color-swatch" style="background: #000099;" onclick="selectTextColor('#000099')"></div>
-                <!-- Row 6: Purples and Pinks -->
+                <div class="color-swatch" style="background: #0000ff;" onclick="selectTextColor('#0000ff')"></div>
+                <div class="color-swatch" style="background: #0099ff;" onclick="selectTextColor('#0099ff')"></div>
+                <div class="color-swatch" style="background: #00ffff;" onclick="selectTextColor('#00ffff')"></div>
+                <!-- Row 6: Purples/Pinks (dark to light) -->
+                <div class="color-swatch" style="background: #330066;" onclick="selectTextColor('#330066')"></div>
+                <div class="color-swatch" style="background: #660099;" onclick="selectTextColor('#660099')"></div>
                 <div class="color-swatch" style="background: #9900ff;" onclick="selectTextColor('#9900ff')"></div>
-                <div class="color-swatch" style="background: #cc00ff;" onclick="selectTextColor('#cc00ff')"></div>
                 <div class="color-swatch" style="background: #ff00ff;" onclick="selectTextColor('#ff00ff')"></div>
-                <div class="color-swatch" style="background: #990099;" onclick="selectTextColor('#990099')"></div>
                 <div class="color-swatch" style="background: #ff0099;" onclick="selectTextColor('#ff0099')"></div>
             </div>
         </div>
@@ -884,6 +886,18 @@
             document.body.style.color = defaultTextColor;
             document.querySelector('header').style.backgroundColor = defaultBgColor;
             document.querySelector('footer').style.backgroundColor = defaultBgColor;
+            
+            // Reset all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.color = defaultTextColor;
+            });
+            
+            // Reset all text elements
+            document.querySelectorAll('p, div, span, a, button, label, h1, h2, h3, nav').forEach(el => {
+                if (!el.closest('#color-picker')) {
+                    el.style.color = defaultTextColor;
+                }
+            });
             
             // Reset color indicator circles
             const indicator = document.getElementById('color-indicator');
@@ -1112,8 +1126,21 @@
         function selectTextColor(color) {
             currentTextColor = color;
             
-            // Apply immediately
+            // Apply immediately to all text
             document.body.style.color = color;
+            
+            // Force apply to all sections and their children
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.color = color;
+            });
+            
+            // Apply to specific text elements, excluding color picker
+            document.querySelectorAll('p, div, span, a, button, label, h1, h2, h3, nav').forEach(el => {
+                // Don't override color picker elements
+                if (!el.closest('#color-picker')) {
+                    el.style.color = color;
+                }
+            });
             
             updateSwatchSelection();
         }
