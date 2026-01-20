@@ -273,6 +273,7 @@
             z-index: 10000 !important;
             cursor: grabbing !important;
             pointer-events: none;
+            will-change: transform;
         }
         /* When items have been positioned - ALWAYS absolute */
         #gallery-grid > div.positioned {
@@ -284,6 +285,88 @@
         /* Ensure lightbox is always above everything */
         #lightbox {
             z-index: 100000 !important;
+        }
+        /* Color picker inline panel */
+        #color-picker {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            border: 2px solid black;
+            padding: 1rem;
+            z-index: 9999;
+            display: none;
+            width: 240px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+        @media (max-width: 768px) {
+            #color-picker {
+                top: auto;
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+                width: auto;
+                max-height: 60vh;
+            }
+        }
+        #color-picker.show {
+            display: block;
+        }
+        .color-input-group {
+            margin-bottom: 0.75rem;
+        }
+        .color-input-group label {
+            display: block;
+            font-size: 0.75rem;
+            margin-bottom: 0.4rem;
+        }
+        .color-swatches {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.35rem;
+        }
+        @media (max-width: 768px) {
+            .color-swatches {
+                gap: 0.25rem;
+            }
+        }
+        .color-swatch {
+            width: 100%;
+            aspect-ratio: 1;
+            border: 2px solid black;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+            -webkit-tap-highlight-color: transparent;
+            will-change: transform;
+        }
+        .color-swatch:active {
+            transform: scale(0.95);
+        }
+        @media (min-width: 769px) {
+            .color-swatch:hover {
+                transform: scale(1.1);
+            }
+        }
+        .color-swatch.selected {
+            border-width: 3px;
+            transform: scale(1.05);
+        }
+        .color-picker-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+        .color-picker-buttons button {
+            flex: 1;
+            padding: 0.4rem;
+            border: 1px solid black;
+            background: white;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+        .color-picker-buttons button:hover {
+            opacity: 0.6;
         }
         /* Mobile: custom resize handle instead of native resize */
         @media (max-width: 768px) {
@@ -424,6 +507,9 @@
             <div id="gallery-controls-mobile" class="flex justify-center gap-2 items-center">
                 <button onclick="zoomOut()" class="text-sm hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300">−</button>
                 <button onclick="zoomIn()" class="text-sm hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300">+</button>
+                <button onclick="toggleColorPicker()" id="color-btn-mobile" class="hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300" title="Change colors">
+                    <div id="color-indicator-mobile" style="width: 14px; height: 14px; border-radius: 50%; border: 2px solid black; background: #ffffff;"></div>
+                </button>
                 <button onclick="toggleLock()" id="lock-btn-mobile" class="text-sm hover:opacity-60 w-5 h-5 flex items-center justify-center transition-opacity duration-300" title="Lock/Unlock" style="z-index: 100001 !important; position: relative;">🔒</button>
                 <button onclick="resetPositions()" id="reset-btn-mobile" class="text-xs hover:opacity-60 px-1 h-5 inline-flex items-center justify-center transition-opacity duration-300">Reset</button>
             </div>
@@ -446,6 +532,9 @@
                 <div id="gallery-controls" class="flex gap-3 items-center justify-end flex-1">
                     <button onclick="zoomOut()" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300">−</button>
                     <button onclick="zoomIn()" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300">+</button>
+                    <button onclick="toggleColorPicker()" id="color-btn" class="hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300" title="Change colors">
+                        <div id="color-indicator" style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid black; background: #ffffff;"></div>
+                    </button>
                     <button onclick="toggleLock()" id="lock-btn" class="text-lg hover:opacity-60 w-7 h-7 flex items-center justify-center transition-opacity duration-300" title="Lock/Unlock gallery" style="z-index: 100001 !important; position: relative;">🔒</button>
                     <button onclick="resetPositions()" id="reset-btn" class="text-sm hover:opacity-60 px-2 h-7 inline-flex items-center justify-center transition-opacity duration-300" title="Reset positions">Reset</button>
                 </div>
@@ -531,6 +620,101 @@
         </div>
     </div>
 
+    <!-- Color Picker Panel -->
+    <div id="color-picker">
+        <div class="color-input-group">
+            <label for="bg-color-swatches">Background</label>
+            <div id="bg-color-swatches" class="color-swatches">
+                <!-- Row 1: Whites and Grays -->
+                <div class="color-swatch" style="background: #ffffff;" onclick="selectBgColor('#ffffff')"></div>
+                <div class="color-swatch" style="background: #f0f0f0;" onclick="selectBgColor('#f0f0f0')"></div>
+                <div class="color-swatch" style="background: #e0e0e0;" onclick="selectBgColor('#e0e0e0')"></div>
+                <div class="color-swatch" style="background: #d0d0d0;" onclick="selectBgColor('#d0d0d0')"></div>
+                <div class="color-swatch" style="background: #c0c0c0;" onclick="selectBgColor('#c0c0c0')"></div>
+                <!-- Row 2: Bright Reds -->
+                <div class="color-swatch" style="background: #ff0000;" onclick="selectBgColor('#ff0000')"></div>
+                <div class="color-swatch" style="background: #ff3333;" onclick="selectBgColor('#ff3333')"></div>
+                <div class="color-swatch" style="background: #ff6666;" onclick="selectBgColor('#ff6666')"></div>
+                <div class="color-swatch" style="background: #ff9999;" onclick="selectBgColor('#ff9999')"></div>
+                <div class="color-swatch" style="background: #ffcccc;" onclick="selectBgColor('#ffcccc')"></div>
+                <!-- Row 3: Oranges and Yellows -->
+                <div class="color-swatch" style="background: #ff6600;" onclick="selectBgColor('#ff6600')"></div>
+                <div class="color-swatch" style="background: #ff9933;" onclick="selectBgColor('#ff9933')"></div>
+                <div class="color-swatch" style="background: #ffcc00;" onclick="selectBgColor('#ffcc00')"></div>
+                <div class="color-swatch" style="background: #ffff00;" onclick="selectBgColor('#ffff00')"></div>
+                <div class="color-swatch" style="background: #ffff99;" onclick="selectBgColor('#ffff99')"></div>
+                <!-- Row 4: Greens -->
+                <div class="color-swatch" style="background: #00ff00;" onclick="selectBgColor('#00ff00')"></div>
+                <div class="color-swatch" style="background: #33ff33;" onclick="selectBgColor('#33ff33')"></div>
+                <div class="color-swatch" style="background: #66ff66;" onclick="selectBgColor('#66ff66')"></div>
+                <div class="color-swatch" style="background: #99ff99;" onclick="selectBgColor('#99ff99')"></div>
+                <div class="color-swatch" style="background: #ccffcc;" onclick="selectBgColor('#ccffcc')"></div>
+                <!-- Row 5: Cyans and Blues -->
+                <div class="color-swatch" style="background: #00ffff;" onclick="selectBgColor('#00ffff')"></div>
+                <div class="color-swatch" style="background: #0099ff;" onclick="selectBgColor('#0099ff')"></div>
+                <div class="color-swatch" style="background: #0066ff;" onclick="selectBgColor('#0066ff')"></div>
+                <div class="color-swatch" style="background: #0000ff;" onclick="selectBgColor('#0000ff')"></div>
+                <div class="color-swatch" style="background: #9999ff;" onclick="selectBgColor('#9999ff')"></div>
+                <!-- Row 6: Purples and Pinks -->
+                <div class="color-swatch" style="background: #9900ff;" onclick="selectBgColor('#9900ff')"></div>
+                <div class="color-swatch" style="background: #cc00ff;" onclick="selectBgColor('#cc00ff')"></div>
+                <div class="color-swatch" style="background: #ff00ff;" onclick="selectBgColor('#ff00ff')"></div>
+                <div class="color-swatch" style="background: #ff66ff;" onclick="selectBgColor('#ff66ff')"></div>
+                <div class="color-swatch" style="background: #ffccff;" onclick="selectBgColor('#ffccff')"></div>
+                <!-- Row 7: More Vibrant Options -->
+                <div class="color-swatch" style="background: #ff0099;" onclick="selectBgColor('#ff0099')"></div>
+                <div class="color-swatch" style="background: #00ff99;" onclick="selectBgColor('#00ff99')"></div>
+                <div class="color-swatch" style="background: #ff9900;" onclick="selectBgColor('#ff9900')"></div>
+                <div class="color-swatch" style="background: #99ff00;" onclick="selectBgColor('#99ff00')"></div>
+                <div class="color-swatch" style="background: #000000;" onclick="selectBgColor('#000000')"></div>
+            </div>
+        </div>
+        <div class="color-input-group">
+            <label for="text-color-swatches">Text</label>
+            <div id="text-color-swatches" class="color-swatches">
+                <!-- Row 1: Basic Black, White, Grays -->
+                <div class="color-swatch" style="background: #000000;" onclick="selectTextColor('#000000')"></div>
+                <div class="color-swatch" style="background: #333333;" onclick="selectTextColor('#333333')"></div>
+                <div class="color-swatch" style="background: #666666;" onclick="selectTextColor('#666666')"></div>
+                <div class="color-swatch" style="background: #999999;" onclick="selectTextColor('#999999')"></div>
+                <div class="color-swatch" style="background: #ffffff;" onclick="selectTextColor('#ffffff')"></div>
+                <!-- Row 2: Bright Reds -->
+                <div class="color-swatch" style="background: #ff0000;" onclick="selectTextColor('#ff0000')"></div>
+                <div class="color-swatch" style="background: #cc0000;" onclick="selectTextColor('#cc0000')"></div>
+                <div class="color-swatch" style="background: #990000;" onclick="selectTextColor('#990000')"></div>
+                <div class="color-swatch" style="background: #660000;" onclick="selectTextColor('#660000')"></div>
+                <div class="color-swatch" style="background: #ff3366;" onclick="selectTextColor('#ff3366')"></div>
+                <!-- Row 3: Oranges and Yellows -->
+                <div class="color-swatch" style="background: #ff6600;" onclick="selectTextColor('#ff6600')"></div>
+                <div class="color-swatch" style="background: #ff9900;" onclick="selectTextColor('#ff9900')"></div>
+                <div class="color-swatch" style="background: #ffcc00;" onclick="selectTextColor('#ffcc00')"></div>
+                <div class="color-swatch" style="background: #ccaa00;" onclick="selectTextColor('#ccaa00')"></div>
+                <div class="color-swatch" style="background: #998800;" onclick="selectTextColor('#998800')"></div>
+                <!-- Row 4: Greens -->
+                <div class="color-swatch" style="background: #00ff00;" onclick="selectTextColor('#00ff00')"></div>
+                <div class="color-swatch" style="background: #00cc00;" onclick="selectTextColor('#00cc00')"></div>
+                <div class="color-swatch" style="background: #009900;" onclick="selectTextColor('#009900')"></div>
+                <div class="color-swatch" style="background: #006600;" onclick="selectTextColor('#006600')"></div>
+                <div class="color-swatch" style="background: #00ff99;" onclick="selectTextColor('#00ff99')"></div>
+                <!-- Row 5: Blues -->
+                <div class="color-swatch" style="background: #00ffff;" onclick="selectTextColor('#00ffff')"></div>
+                <div class="color-swatch" style="background: #0099ff;" onclick="selectTextColor('#0099ff')"></div>
+                <div class="color-swatch" style="background: #0066ff;" onclick="selectTextColor('#0066ff')"></div>
+                <div class="color-swatch" style="background: #0000ff;" onclick="selectTextColor('#0000ff')"></div>
+                <div class="color-swatch" style="background: #000099;" onclick="selectTextColor('#000099')"></div>
+                <!-- Row 6: Purples and Pinks -->
+                <div class="color-swatch" style="background: #9900ff;" onclick="selectTextColor('#9900ff')"></div>
+                <div class="color-swatch" style="background: #cc00ff;" onclick="selectTextColor('#cc00ff')"></div>
+                <div class="color-swatch" style="background: #ff00ff;" onclick="selectTextColor('#ff00ff')"></div>
+                <div class="color-swatch" style="background: #990099;" onclick="selectTextColor('#990099')"></div>
+                <div class="color-swatch" style="background: #ff0099;" onclick="selectTextColor('#ff0099')"></div>
+            </div>
+        </div>
+        <div class="color-picker-buttons">
+            <button onclick="toggleColorPicker()">Close</button>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="bg-white z-30">
         <div class="px-4 md:px-6 py-3 flex justify-around items-center">
@@ -563,6 +747,12 @@
         let itemImageMap = new Map(); // Map items to their image data
         let placeholders = new Map(); // Track placeholders
         let previousZoomLevel = zoomLevel; // Track zoom level changes
+        
+        // Default colors
+        const defaultBgColor = '#ffffff';
+        const defaultTextColor = '#000000';
+        let currentBgColor = defaultBgColor;
+        let currentTextColor = defaultTextColor;
 
         // Store original grid positions - only store NON-positioned items
         function storeOriginalPositions() {
@@ -685,6 +875,21 @@
             // Clear all tracking
             originalPositions.clear();
             zIndexCounter = 100;
+            
+            // Reset colors to default
+            currentBgColor = defaultBgColor;
+            currentTextColor = defaultTextColor;
+            
+            document.body.style.backgroundColor = defaultBgColor;
+            document.body.style.color = defaultTextColor;
+            document.querySelector('header').style.backgroundColor = defaultBgColor;
+            document.querySelector('footer').style.backgroundColor = defaultBgColor;
+            
+            // Reset color indicator circles
+            const indicator = document.getElementById('color-indicator');
+            const indicatorMobile = document.getElementById('color-indicator-mobile');
+            if (indicator) indicator.style.backgroundColor = defaultBgColor;
+            if (indicatorMobile) indicatorMobile.style.backgroundColor = defaultBgColor;
             
             // Restore proper click handlers based on current lock state
             galleryItems.forEach((item) => {
@@ -845,6 +1050,74 @@
             document.removeEventListener('touchend', endDrag);
         }
 
+        // Toggle color picker
+        function toggleColorPicker() {
+            const picker = document.getElementById('color-picker');
+            
+            if (picker.classList.contains('show')) {
+                picker.classList.remove('show');
+            } else {
+                picker.classList.add('show');
+                // Highlight current selections
+                updateSwatchSelection();
+            }
+        }
+
+        // Update which swatches are selected
+        function updateSwatchSelection() {
+            // Use cached queries for better performance
+            const bgSwatches = document.querySelectorAll('#bg-color-swatches .color-swatch');
+            const textSwatches = document.querySelectorAll('#text-color-swatches .color-swatch');
+            
+            // Clear and update background selections
+            bgSwatches.forEach(swatch => {
+                const swatchColor = swatch.style.background.toLowerCase().replace(/\s/g, '');
+                if (swatchColor === currentBgColor.toLowerCase()) {
+                    swatch.classList.add('selected');
+                } else {
+                    swatch.classList.remove('selected');
+                }
+            });
+            
+            // Clear and update text selections
+            textSwatches.forEach(swatch => {
+                const swatchColor = swatch.style.background.toLowerCase().replace(/\s/g, '');
+                if (swatchColor === currentTextColor.toLowerCase()) {
+                    swatch.classList.add('selected');
+                } else {
+                    swatch.classList.remove('selected');
+                }
+            });
+        }
+
+        // Select background color
+        function selectBgColor(color) {
+            currentBgColor = color;
+            
+            // Apply immediately
+            document.body.style.backgroundColor = color;
+            document.querySelector('header').style.backgroundColor = color;
+            document.querySelector('footer').style.backgroundColor = color;
+            
+            // Update the color indicator circles
+            const indicator = document.getElementById('color-indicator');
+            const indicatorMobile = document.getElementById('color-indicator-mobile');
+            if (indicator) indicator.style.backgroundColor = color;
+            if (indicatorMobile) indicatorMobile.style.backgroundColor = color;
+            
+            updateSwatchSelection();
+        }
+
+        // Select text color
+        function selectTextColor(color) {
+            currentTextColor = color;
+            
+            // Apply immediately
+            document.body.style.color = color;
+            
+            updateSwatchSelection();
+        }
+
         function showSection(section) {
             if (MAINTENANCE[section]) {
                 const entered = prompt(`${section.charAt(0).toUpperCase() + section.slice(1)} is under maintenance. Enter password:`);
@@ -892,11 +1165,6 @@
                 contact: 'Contact - w59n1.com'
             };
             document.title = titles[section] || 'w59n1.com';
-
-            // Lazy load images when switching to sections
-            if (section === 'weblog') {
-                lazyLoadBlogImages();
-            }
 
             // Update URL without page reload
             try {
@@ -1084,27 +1352,6 @@
             }
         ];
 
-        // Intersection Observer for lazy loading
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    const src = img.getAttribute('data-src');
-                    if (src) {
-                        img.src = src;
-                        img.removeAttribute('data-src');
-                        img.onload = () => {
-                            img.classList.add('loaded');
-                            img.parentElement.classList.remove('image-loading');
-                        };
-                    }
-                    observer.unobserve(img);
-                }
-            });
-        }, {
-            rootMargin: '50px'
-        });
-
         // Initialize gallery with immediate loading for faster display
         const gallery = document.getElementById('gallery-grid');
         updateGalleryGrid();
@@ -1118,7 +1365,7 @@
                     <img src="${image.url}" 
                          alt="${image.alt}" 
                          title="${image.title}"
-                         class="w-full h-full object-cover loaded">
+                         class="w-full h-full object-cover">
                 </div>
             `;
             
@@ -1128,14 +1375,6 @@
             div.onclick = () => openLightbox(image.url, image.title, image.description, image.alt);
             gallery.appendChild(div);
         });
-
-        // Lazy load blog images
-        function lazyLoadBlogImages() {
-            const blogImages = document.querySelectorAll('#blog-posts img[data-src]');
-            blogImages.forEach(img => {
-                imageObserver.observe(img);
-            });
-        }
 
         // Initialize blog posts with semantic HTML and SEO-friendly markup
         const blogContainer = document.getElementById('blog-posts');
@@ -1150,7 +1389,7 @@
                 mediaHTML = '<div class="space-y-4 mt-4">';
                 post.media.forEach(item => {
                     if (item.type === 'image') {
-                        mediaHTML += `<div class="image-loading"><img data-src="${item.url}" alt="${item.alt || post.title}" class="w-full h-auto object-cover rounded" loading="lazy"></div>`;
+                        mediaHTML += `<img src="${item.url}" alt="${item.alt || post.title}" class="w-full h-auto object-cover rounded" loading="lazy">`;
                     } else if (item.type === 'video') {
                         mediaHTML += `<video controls class="w-full h-auto rounded" preload="metadata"><source src="${item.url}" type="video/mp4"></video>`;
                     }
