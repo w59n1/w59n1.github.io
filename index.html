@@ -266,6 +266,7 @@
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
+            touch-action: none; /* Prevent default touch behaviors when unlocked */
         }
         .gallery-unlocked #gallery-grid > div.dragging {
             opacity: 1;
@@ -284,26 +285,23 @@
         #lightbox {
             z-index: 100000 !important;
         }
-        /* Mobile: enable resize when unlocked */
+        /* Mobile: custom resize handle instead of native resize */
         @media (max-width: 768px) {
-            .gallery-unlocked #gallery-grid > div.positioned {
-                resize: both !important;
-                overflow: hidden;
+            #gallery-grid > div.positioned {
+                resize: none !important; /* Disable native resize on mobile */
             }
-            /* Show resize handle indicator on mobile */
+            /* Show custom resize handle indicator on mobile when unlocked */
             .gallery-unlocked #gallery-grid > div.positioned::after {
                 content: '';
                 position: absolute;
                 bottom: 0;
                 right: 0;
-                width: 20px;
-                height: 20px;
-                background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.3) 50%);
+                width: 30px;
+                height: 30px;
+                background: linear-gradient(135deg, transparent 40%, rgba(0,0,0,0.4) 40%);
                 cursor: nwse-resize;
                 pointer-events: auto;
-            }
-            body:not(.gallery-unlocked) #gallery-grid > div.positioned {
-                resize: none !important;
+                z-index: 10;
             }
         }
         /* Desktop: enable resize when unlocked */
@@ -705,7 +703,8 @@
 
         // Ultra-simplified drag
         let dragging = false;
-        let startX, startY, initialLeft, initialTop;
+        let resizing = false; // Track if we're resizing instead of dragging
+        let startX, startY, initialLeft, initialTop, initialWidth, initialHeight;
         let zIndexCounter = 100;
 
         function startDrag(e) {
@@ -718,25 +717,20 @@
             const clickX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
             const clickY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
             
-            // If clicking resize corner (bottom-right zone), don't drag
-            const resizeZoneSize = window.innerWidth <= 768 ? 30 : 40; // Smaller zone on mobile
+            // Check if clicking in resize zone (bottom-right corner)
+            const resizeZoneSize = window.innerWidth <= 768 ? 30 : 40;
             const isResizeZone = target.classList.contains('positioned') && 
                                  clickX > rect.width - resizeZoneSize && 
                                  clickY > rect.height - resizeZoneSize;
             
-            if (isResizeZone) {
-                return;
-            }
-            
             e.preventDefault();
             e.stopPropagation();
             
-            dragging = true;
             draggedElement = target;
             
             // Bring this image to front (but keep below lightbox z-index of 100000)
             zIndexCounter++;
-            if (zIndexCounter > 9999) zIndexCounter = 100; // Reset if too high
+            if (zIndexCounter > 9999) zIndexCounter = 100;
             draggedElement.style.zIndex = zIndexCounter;
             
             // If not yet positioned, position it now and create placeholder
@@ -771,12 +765,23 @@
                 draggedElement.classList.add('positioned');
             }
             
-            draggedElement.classList.add('dragging');
-            
             startX = e.touches ? e.touches[0].clientX : e.clientX;
             startY = e.touches ? e.touches[0].clientY : e.clientY;
             initialLeft = parseFloat(draggedElement.style.left) || 0;
             initialTop = parseFloat(draggedElement.style.top) || 0;
+            initialWidth = parseFloat(draggedElement.style.width) || rect.width;
+            initialHeight = parseFloat(draggedElement.style.height) || rect.height;
+            
+            if (isResizeZone) {
+                // Start resizing
+                resizing = true;
+                dragging = false;
+            } else {
+                // Start dragging
+                dragging = true;
+                resizing = false;
+                draggedElement.classList.add('dragging');
+            }
             
             document.addEventListener('mousemove', drag);
             document.addEventListener('touchmove', drag, { passive: false });
@@ -785,7 +790,9 @@
         }
 
         function drag(e) {
-            if (!dragging || !draggedElement) return;
+            if (!dragging && !resizing) return;
+            if (!draggedElement) return;
+            
             e.preventDefault();
             e.stopPropagation();
             
@@ -795,18 +802,32 @@
             const dx = currentX - startX;
             const dy = currentY - startY;
             
-            const newLeft = initialLeft + dx;
-            const newTop = initialTop + dy;
-            
-            // On mobile, constrain to viewport
-            if (window.innerWidth <= 768) {
-                const maxLeft = window.innerWidth - 100; // Keep at least 100px visible
-                const constrainedLeft = Math.max(-50, Math.min(newLeft, maxLeft));
-                draggedElement.style.left = constrainedLeft + 'px';
-                draggedElement.style.top = newTop + 'px';
-            } else {
-                draggedElement.style.left = newLeft + 'px';
-                draggedElement.style.top = newTop + 'px';
+            if (resizing) {
+                // Handle resizing
+                const newWidth = initialWidth + dx;
+                const newHeight = initialHeight + dy;
+                
+                // Set minimum size
+                const minSize = 50;
+                if (newWidth > minSize && newHeight > minSize) {
+                    draggedElement.style.width = newWidth + 'px';
+                    draggedElement.style.height = newHeight + 'px';
+                }
+            } else if (dragging) {
+                // Handle dragging
+                const newLeft = initialLeft + dx;
+                const newTop = initialTop + dy;
+                
+                // On mobile, constrain to viewport
+                if (window.innerWidth <= 768) {
+                    const maxLeft = window.innerWidth - 100;
+                    const constrainedLeft = Math.max(-50, Math.min(newLeft, maxLeft));
+                    draggedElement.style.left = constrainedLeft + 'px';
+                    draggedElement.style.top = newTop + 'px';
+                } else {
+                    draggedElement.style.left = newLeft + 'px';
+                    draggedElement.style.top = newTop + 'px';
+                }
             }
         }
 
@@ -816,6 +837,7 @@
                 draggedElement = null;
             }
             dragging = false;
+            resizing = false;
             
             document.removeEventListener('mousemove', drag);
             document.removeEventListener('touchmove', drag);
