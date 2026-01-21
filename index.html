@@ -191,7 +191,11 @@
         #gallery-grid {
             position: relative; /* Positioned items are relative to this container */
         }
+        #shop-grid {
+            position: relative; /* Positioned items are relative to this container */
+        }
         #gallery-grid > div,
+        #shop-grid > div,
         #gallery-grid > div > div,
         #gallery-grid img {
             transition: none !important;
@@ -256,10 +260,12 @@
         #unlock-tutorial.hidden {
             display: none;
         }
-        .gallery-unlocked #gallery-grid {
+        .gallery-unlocked #gallery-grid,
+        .gallery-unlocked #shop-grid {
             position: relative;
         }
-        .gallery-unlocked #gallery-grid > div {
+        .gallery-unlocked #gallery-grid > div,
+        .gallery-unlocked #shop-grid > div {
             cursor: move !important;
             z-index: 1;
             user-select: none;
@@ -268,7 +274,8 @@
             -ms-user-select: none;
             touch-action: none; /* Prevent default touch behaviors when unlocked */
         }
-        .gallery-unlocked #gallery-grid > div.dragging {
+        .gallery-unlocked #gallery-grid > div.dragging,
+        .gallery-unlocked #shop-grid > div.dragging {
             opacity: 1;
             z-index: 10000 !important;
             cursor: grabbing !important;
@@ -276,12 +283,21 @@
             will-change: transform;
         }
         /* When items have been positioned - ALWAYS absolute */
-        #gallery-grid > div.positioned {
+        #gallery-grid > div.positioned,
+        #shop-grid > div.positioned {
             position: absolute !important;
             min-width: 50px;
             min-height: 50px;
             z-index: 1; /* Base z-index for positioned items */
         }
+        /* Product modal */
+        #product-modal {
+            backdrop-filter: blur(4px);
+        }
+        #product-modal .bg-white {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
         /* Ensure lightbox is always above everything */
         #lightbox {
             z-index: 100000 !important;
@@ -376,7 +392,8 @@
                 resize: none !important; /* Disable native resize on mobile */
             }
             /* Show custom resize handle indicator on mobile when unlocked */
-            .gallery-unlocked #gallery-grid > div.positioned::after {
+            .gallery-unlocked #gallery-grid > div.positioned::after,
+            .gallery-unlocked #shop-grid > div.positioned::after {
                 content: '';
                 position: absolute;
                 bottom: 0;
@@ -391,11 +408,13 @@
         }
         /* Desktop: enable resize when unlocked */
         @media (min-width: 769px) {
-            .gallery-unlocked #gallery-grid > div.positioned {
+            .gallery-unlocked #gallery-grid > div.positioned,
+            .gallery-unlocked #shop-grid > div.positioned {
                 resize: both;
                 overflow: hidden;
             }
-            body:not(.gallery-unlocked) #gallery-grid > div.positioned {
+            body:not(.gallery-unlocked) #gallery-grid > div.positioned,
+            body:not(.gallery-unlocked) #shop-grid > div.positioned {
                 resize: none;
             }
         }
@@ -591,15 +610,10 @@
     </section>
 
     <!-- shop -->
-    <section id="shop-section" class="section" aria-labelledby="shop-heading">
-        <main class="px-4 md:px-8 pt-32 md:pt-28 pb-12">
+    <section id="shop-section" class="section" aria-labelledby="shop-heading" style="position: relative;">
+        <main class="px-2 md:px-4 pt-24 md:pt-28 pb-12 mx-auto" style="position: relative;">
             <h1 id="shop-heading" class="sr-only">w59n1 Shop</h1>
-            <div class="max-w-4xl">
-                <div class="text-sm mb-8">Coming soon.</div>
-                <div id="shop-items" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                    <!-- Products will be dynamically added here -->
-                </div>
-            </div>
+            <div id="shop-grid" class="grid gap-2 md:gap-8" role="list"></div>
         </main>
     </section>
 
@@ -618,6 +632,17 @@
             <div class="w-full md:w-80 flex-shrink-0 max-h-[70vh] md:max-h-[80vh] overflow-y-auto">
                 <h2 id="lightbox-title" class="sr-only">Artwork details</h2>
                 <div id="lightbox-description" class="text-sm leading-relaxed pr-4 whitespace-pre-wrap flex flex-col gap-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div id="product-modal" class="hidden fixed inset-0 z-50" style="z-index: 100000;">
+        <div class="absolute inset-0 bg-black bg-opacity-50" onclick="closeProductModal()"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white border-2 border-black p-6 md:p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <button onclick="closeProductModal()" class="absolute top-4 right-4 text-2xl hover:opacity-60">&times;</button>
+            <div id="product-modal-content" class="flex flex-col md:flex-row gap-6">
+                <!-- Content will be inserted here -->
             </div>
         </div>
     </div>
@@ -749,12 +774,54 @@
         let itemImageMap = new Map(); // Map items to their image data
         let placeholders = new Map(); // Track placeholders
         let previousZoomLevel = zoomLevel; // Track zoom level changes
+        let shopItemMap = new Map(); // Map shop items to their product data
         
         // Default colors
         const defaultBgColor = '#ffffff';
         const defaultTextColor = '#000000';
         let currentBgColor = defaultBgColor;
         let currentTextColor = defaultTextColor;
+        
+        // Initialize shop with original aspect ratios (no cropping)
+        function initializeShop() {
+            const shopGrid = document.getElementById('shop-grid');
+            if (!shopGrid) return;
+            
+            // Clear existing items
+            shopGrid.innerHTML = '';
+            shopItemMap.clear();
+            
+            // Set grid to columns like gallery
+            shopGrid.className = `grid gap-2 md:gap-8 grid-cols-${zoomLevel}`;
+            
+            shopProducts.forEach((product) => {
+                const div = document.createElement('div');
+                
+                div.className = 'cursor-pointer';
+                div.setAttribute('role', 'listitem');
+                
+                // Display at actual size with original aspect ratio
+                div.innerHTML = `
+                    <div class="bg-gray-50">
+                        <img src="${product.image}" 
+                             alt="${product.name}" 
+                             title="${product.name}"
+                             class="w-full h-auto">
+                    </div>
+                `;
+                
+                // Store mapping between div and product data
+                shopItemMap.set(div, product);
+                
+                div.onclick = () => {
+                    if (!dragging && !resizing) {
+                        openShopItem(product);
+                    }
+                };
+                
+                shopGrid.appendChild(div);
+            });
+        }
 
         // Store original grid positions - only store NON-positioned items
         function storeOriginalPositions() {
@@ -786,19 +853,22 @@
             
             galleryUnlocked = !galleryUnlocked;
             
-            const section = document.getElementById('gallery-section');
+            const gallerySection = document.getElementById('gallery-section');
+            const shopSection = document.getElementById('shop-section');
             const body = document.body;
             const lockBtn = document.getElementById('lock-btn');
             const lockBtnMobile = document.getElementById('lock-btn-mobile');
             
             // Update UI state
             if (galleryUnlocked) {
-                section.classList.add('gallery-unlocked');
+                if (gallerySection) gallerySection.classList.add('gallery-unlocked');
+                if (shopSection) shopSection.classList.add('gallery-unlocked');
                 body.classList.add('gallery-unlocked');
                 if (lockBtn) lockBtn.textContent = '🔓';
                 if (lockBtnMobile) lockBtnMobile.textContent = '🔓';
             } else {
-                section.classList.remove('gallery-unlocked');
+                if (gallerySection) gallerySection.classList.remove('gallery-unlocked');
+                if (shopSection) shopSection.classList.remove('gallery-unlocked');
                 body.classList.remove('gallery-unlocked');
                 if (lockBtn) lockBtn.textContent = '🔒';
                 if (lockBtnMobile) lockBtnMobile.textContent = '🔒';
@@ -807,16 +877,36 @@
             // Restore scroll position to prevent any shifts
             window.scrollTo(scrollX, scrollY);
             
-            // Update click handlers
+            // Update click handlers for gallery
             const galleryItems = document.querySelectorAll('#gallery-grid > div');
             galleryItems.forEach((item) => {
                 const imageData = itemImageMap.get(item);
                 if (!imageData) return;
                 
                 if (galleryUnlocked) {
-                    // Remove click handler when unlocked
                     item.onclick = null;
-                    
+                    if (!item.hasAttribute('data-drag-initialized')) {
+                        item.addEventListener('mousedown', startDrag);
+                        item.addEventListener('touchstart', startDrag, { passive: false });
+                        item.setAttribute('data-drag-initialized', 'true');
+                    }
+                } else {
+                    item.onclick = (e) => {
+                        if (!dragging) {
+                            openLightbox(imageData.url, imageData.title, imageData.description, imageData.alt);
+                        }
+                    };
+                }
+            });
+            
+            // Update click handlers for shop
+            const shopItems = document.querySelectorAll('#shop-grid > div');
+            shopItems.forEach((item) => {
+                const productData = shopItemMap.get(item);
+                if (!productData) return;
+                
+                if (galleryUnlocked) {
+                    item.onclick = null;
                     // Ensure drag handlers are attached
                     if (!item.hasAttribute('data-drag-initialized')) {
                         item.addEventListener('mousedown', startDrag);
@@ -824,10 +914,9 @@
                         item.setAttribute('data-drag-initialized', 'true');
                     }
                 } else {
-                    // Restore click handler when locked
                     item.onclick = (e) => {
-                        if (!dragging) {
-                            openLightbox(imageData.url, imageData.title, imageData.description, imageData.alt);
+                        if (!dragging && !resizing) {
+                            openShopItem(productData);
                         }
                     };
                 }
@@ -850,13 +939,16 @@
         // Reset all positions to original
         function resetPositions() {
             const galleryItems = document.querySelectorAll('#gallery-grid > div');
+            const shopItems = document.querySelectorAll('#shop-grid > div');
+            const allItems = [...galleryItems, ...shopItems];
             
-            galleryItems.forEach((item) => {
+            allItems.forEach((item) => {
                 // Remove positioned class and ALL inline styles
                 item.classList.remove('positioned');
                 item.removeAttribute('style');
                 
-                const container = item.querySelector('.aspect-square');
+                // Handle both gallery and shop containers
+                const container = item.querySelector('.aspect-square, div:first-child');
                 if (container) {
                     container.removeAttribute('style');
                 }
@@ -917,18 +1009,27 @@
             if (indicatorMobile) indicatorMobile.style.backgroundColor = defaultBgColor;
             
             // Restore proper click handlers based on current lock state
-            galleryItems.forEach((item) => {
+            allItems.forEach((item) => {
                 const imageData = itemImageMap.get(item);
-                if (!imageData) return;
+                const productData = shopItemMap.get(item);
                 
                 if (!galleryUnlocked) {
                     // If locked, restore click handlers
-                    item.onclick = () => openLightbox(imageData.url, imageData.title, imageData.description, imageData.alt);
+                    if (imageData) {
+                        item.onclick = () => openLightbox(imageData.url, imageData.title, imageData.description, imageData.alt);
+                    } else if (productData) {
+                        item.onclick = () => openShopItem(productData);
+                    }
                 } else {
                     // If unlocked, remove click handlers
                     item.onclick = null;
                 }
             });
+            
+            // Reinitialize shop with new random sizes
+            if (activeSection === 'shop') {
+                initializeShop();
+            }
         }
 
         // Ultra-simplified drag
@@ -986,7 +1087,8 @@
                 draggedElement.style.width = itemRect.width + 'px';
                 draggedElement.style.height = itemRect.height + 'px';
                 
-                const container = draggedElement.querySelector('.aspect-square');
+                // Handle both aspect-square (gallery) and regular containers (shop)
+                const container = draggedElement.querySelector('.aspect-square, div:first-child');
                 if (container) {
                     container.style.width = '100%';
                     container.style.height = '100%';
@@ -1167,6 +1269,76 @@
             updateSwatchSelection();
         }
 
+        // Open shop item details in modal
+        function openShopItem(product) {
+            const modal = document.getElementById('product-modal');
+            const modalContent = document.getElementById('product-modal-content');
+            
+            // Set modal background to match current background color
+            modal.querySelector('div.absolute.inset-0').style.backgroundColor = currentBgColor;
+            modal.querySelector('div.bg-white').style.backgroundColor = currentBgColor;
+            modal.querySelector('div.bg-white').style.color = currentTextColor;
+            
+            // Build modal content
+            modalContent.innerHTML = `
+                <div class="md:w-1/2">
+                    <img src="${product.image}" alt="${product.name}" class="w-full h-auto">
+                </div>
+                <div class="md:w-1/2 flex flex-col">
+                    <h2 class="text-2xl mb-2" style="color: ${currentTextColor};">${product.name}</h2>
+                    <div class="text-xl mb-4" style="color: ${currentTextColor};">$${product.price.toFixed(2)}</div>
+                    <p class="text-sm mb-6" style="color: ${currentTextColor};">${product.description}</p>
+                    <div class="text-sm mb-6" style="color: ${currentTextColor};">
+                        ${product.inStock ? '✓ In Stock' : '✗ Out of Stock'}
+                    </div>
+                    <button 
+                        onclick="buyNow('${product.id}')" 
+                        class="px-6 py-3 border-2 border-black text-sm hover:opacity-60 transition-opacity ${!product.inStock ? 'opacity-50 cursor-not-allowed' : ''}"
+                        style="background: white; color: black;"
+                        ${!product.inStock ? 'disabled' : ''}>
+                        ${product.inStock ? 'Buy Now via Square' : 'Out of Stock'}
+                    </button>
+                    <div class="text-xs mt-4 opacity-60" style="color: ${currentTextColor};">
+                        Secure checkout powered by Square
+                    </div>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Close product modal
+        function closeProductModal() {
+            const modal = document.getElementById('product-modal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+        
+        // Buy now - opens Square checkout
+        function buyNow(productId) {
+            // Square checkout URLs - UPDATE THESE with your actual Square product URLs
+            const squareUrls = {
+                1: 'https://checkout.square.site/buy/YOUR_PRODUCT_1_ID',
+                2: 'https://checkout.square.site/buy/YOUR_PRODUCT_2_ID',
+                3: 'https://checkout.square.site/buy/YOUR_PRODUCT_3_ID',
+                4: 'https://checkout.square.site/buy/YOUR_PRODUCT_4_ID',
+                5: 'https://checkout.square.site/buy/YOUR_PRODUCT_5_ID',
+                6: 'https://checkout.square.site/buy/YOUR_PRODUCT_6_ID',
+                7: 'https://checkout.square.site/buy/YOUR_PRODUCT_7_ID',
+                8: 'https://checkout.square.site/buy/YOUR_PRODUCT_8_ID',
+                9: 'https://checkout.square.site/buy/YOUR_PRODUCT_9_ID',
+                10: 'https://checkout.square.site/buy/YOUR_PRODUCT_10_ID',
+            };
+            
+            const url = squareUrls[productId];
+            if (url && url !== 'https://checkout.square.site/buy/YOUR_PRODUCT_' + productId + '_ID') {
+                window.open(url, '_blank');
+            } else {
+                alert('Square checkout not configured yet.\n\nTo set up:\n1. Create products in Square Online\n2. Get checkout URLs\n3. Update the squareUrls object in the code');
+            }
+        }
+
         function showSection(section) {
             if (MAINTENANCE[section]) {
                 const entered = prompt(`${section.charAt(0).toUpperCase() + section.slice(1)} is under maintenance. Enter password:`);
@@ -1198,7 +1370,7 @@
             // Handle gallery controls visibility
             const controlsDesktop = document.getElementById('gallery-controls');
             const controlsMobile = document.getElementById('gallery-controls-mobile');
-            if (section === 'gallery') {
+            if (section === 'gallery' || section === 'shop') {
                 if (controlsDesktop) controlsDesktop.style.display = 'flex';
                 if (controlsMobile) controlsMobile.style.display = 'flex';
             } else {
@@ -1214,6 +1386,11 @@
                 contact: 'Contact - w59n1.com'
             };
             document.title = titles[section] || 'w59n1.com';
+            
+            // Initialize shop with random sizes when visiting
+            if (section === 'shop') {
+                initializeShop();
+            }
 
             // Update URL without page reload
             try {
@@ -1270,12 +1447,15 @@
         }
 
         function scalePositionedItems(oldZoom, newZoom) {
-            const positionedItems = document.querySelectorAll('#gallery-grid > div.positioned');
+            const positionedItems = document.querySelectorAll('#gallery-grid > div.positioned, #shop-grid > div.positioned');
             
             if (positionedItems.length === 0) return;
             
             // Get a reference grid item to calculate the grid cell size at both zoom levels
-            const nonPositioned = document.querySelectorAll('#gallery-grid > div:not(.positioned)');
+            const nonPositionedGallery = document.querySelectorAll('#gallery-grid > div:not(.positioned)');
+            const nonPositionedShop = document.querySelectorAll('#shop-grid > div:not(.positioned)');
+            const nonPositioned = nonPositionedGallery.length > 0 ? nonPositionedGallery : nonPositionedShop;
+            
             if (nonPositioned.length === 0) return;
             
             // Calculate approximate cell width for old and new zoom
@@ -1321,6 +1501,7 @@
 
         function updateGalleryGrid() {
             const gallery = document.getElementById('gallery-grid');
+            const shop = document.getElementById('shop-grid');
             const gridClasses = {
                 1: 'grid-cols-1',
                 2: 'grid-cols-2',
@@ -1334,10 +1515,16 @@
                 10: 'grid-cols-10'
             };
             
-            gallery.className = `grid gap-2 md:gap-8 ${gridClasses[zoomLevel]}`;
+            if (gallery) {
+                gallery.className = `grid gap-2 md:gap-8 ${gridClasses[zoomLevel]}`;
+            }
+            if (shop) {
+                shop.className = `grid gap-2 md:gap-8 ${gridClasses[zoomLevel]}`;
+            }
             
             // Force reflow to ensure layout is calculated
-            void gallery.offsetHeight;
+            if (gallery) void gallery.offsetHeight;
+            if (shop) void shop.offsetHeight;
         }
 
         // Image data with SEO-friendly alt text
@@ -1407,8 +1594,8 @@
             { id: 63, url: 'images/DOOM.png', title: 'Doom', description: 'Doom\n1417x1417\n08/16/2025', alt: 'Doom' }, 
             { id: 64, url: 'images/idea2.png', title: 'Bad Idea', description: 'Bad Idea\n1085x1417\n08/15/2025', alt: 'Bad Idea' },
             { id: 65, url: 'images/dreamy.png', title: 'Dreamy', description: 'The Last Weapon That Can Be Used\n736x552\n08/15/2025', alt: 'Dreamy' },
-            { id: 66, url: 'images/bugs.png', title: 'Bugs', description: 'Bugs\n1417x1417\n08/11/2025', alt: 'Bugs' }            
-        ];
+            { id: 66, url: 'images/bugs.png', title: 'Bugs', description: 'Bugs\n1417x1417\n08/11/2025', alt: 'Bugs' }           
+            ];
 
         const blogPosts = [
             {
@@ -1421,7 +1608,6 @@
                     { type: 'image', url: 'images/update3.png', alt: 'update3' },
                     { type: 'image', url: 'images/update4.png', alt: 'update4' },                    
                 ]
-            },                        
             {
                 date: '01/19/2026 12:43 am',
                 title: 'Website Update',
@@ -1550,7 +1736,18 @@
         }
 
         // Shop products array
-        const shopProducts = [];
+        const shopProducts = [
+            { id: 1, name: 'Product 1', price: 29.99, image: 'images/NYAN.jpg', description: 'Sample product description', inStock: true },
+            { id: 2, name: 'Product 2', price: 39.99, image: 'images/makeitcount.jpg', description: 'Sample product description', inStock: true },
+            { id: 3, name: 'Product 3', price: 49.99, image: 'images/TRASHWORLD.jpg', description: 'Sample product description', inStock: true },
+            { id: 4, name: 'Product 4', price: 24.99, image: 'images/overtoolate.jpg', description: 'Sample product description', inStock: true },
+            { id: 5, name: 'Product 5', price: 34.99, image: 'images/vivalapsycho.jpg', description: 'Sample product description', inStock: true },
+            { id: 6, name: 'Product 6', price: 44.99, image: 'images/MONSTERBEAST_FINAL.jpg', description: 'Sample product description', inStock: true },
+            { id: 7, name: 'Product 7', price: 54.99, image: 'images/HOLYMASK.jpg', description: 'Sample product description', inStock: true },
+            { id: 8, name: 'Product 8', price: 19.99, image: 'images/FREACKY.jpg', description: 'Sample product description', inStock: true },
+            { id: 9, name: 'Product 9', price: 64.99, image: 'images/FUCKTHIS.jpg', description: 'Sample product description', inStock: true },
+            { id: 10, name: 'Product 10', price: 27.99, image: 'images/PEACLY.jpg', description: 'Sample product description', inStock: true },
+        ];
 
         // Render shop products
         const shopContainer = document.getElementById('shop-items');
