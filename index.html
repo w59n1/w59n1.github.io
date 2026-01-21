@@ -88,138 +88,88 @@
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
         }
-        html {
-            overflow-x: hidden;
-            width: 100%;
-        }
-        body {
+        html, body {
             margin: 0;
             padding: 0;
             overflow-x: hidden;
             width: 100%;
+        }
+        body {
             position: relative;
             -webkit-overflow-scrolling: touch;
-            /* Text stretch on desktop */
             font-stretch: 200%;
             letter-spacing: 0.3em;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
-        /* Mobile specific fixes */
+        /* Mobile optimizations */
         @media (max-width: 768px) {
-            html, body {
-                overflow-x: hidden !important;
-                max-width: 100vw !important;
-                position: relative;
-            }
             body {
                 font-stretch: 150%;
                 letter-spacing: 0.2em;
-                width: 100vw;
-                touch-action: pan-y; /* Only allow vertical scrolling */
+                touch-action: pan-y;
             }
             #blog-posts, #blog-posts *, 
-            #gallery-section, #gallery-section * {
+            #gallery-section, #gallery-section *,
+            #shop-section, #shop-section * {
                 font-stretch: 180% !important;
                 letter-spacing: 0.3em !important;
             }
-            /* Prevent any element from causing horizontal scroll */
-            * {
-                max-width: 100vw;
-            }
-            /* Make gallery grid fit perfectly */
-            #gallery-grid {
-                width: 100%;
-                max-width: 100%;
-                overflow: visible;
-            }
-            /* Ensure main containers don't overflow */
-            main {
-                width: 100%;
-                max-width: 100%;
-                overflow-x: hidden;
-            }
-            /* Positioned items stay within viewport */
-            #gallery-grid > div.positioned {
+            * { max-width: 100vw; }
+            main { overflow-x: hidden; }
+            #gallery-grid > div.positioned,
+            #shop-grid > div.positioned {
                 max-width: calc(100vw - 2rem) !important;
-            }
-            /* Ensure sections don't overflow */
-            .section {
-                overflow-x: hidden;
-                max-width: 100vw;
             }
         }
         /* Desktop text stretch */
         @media (min-width: 769px) {
             #blog-posts, #blog-posts *, 
-            #gallery-section, #gallery-section * {
+            #gallery-section, #gallery-section *,
+            #shop-section, #shop-section * {
                 font-stretch: 250% !important;
                 letter-spacing: 0.4em !important;
             }
         }
         /* Force images to never stretch */
         img, picture, video, canvas, svg,
-        .aspect-square, #gallery-grid > div {
+        .aspect-square, #gallery-grid > div, #shop-grid > div {
             font-stretch: normal !important;
             letter-spacing: normal !important;
         }
-        /* Navigation extra stretched */
-        nav button, #tab-contact, #tab-contact-mobile,
-        button, a {
-            font-stretch: 200%;
-            letter-spacing: 0.25em;
-        }
-        @media (max-width: 768px) {
-            nav button, #tab-contact, #tab-contact-mobile,
-            button, a {
-                font-stretch: 150%;
-                letter-spacing: 0.15em;
-            }
-        }
-        /* Logo stretch - stretched but readable */
+        /* Logo stretch */
         .logo-stretch {
             transform: translateX(-50%) scaleX(2.8);
             letter-spacing: 0.35em;
             display: inline-block;
         }
-        /* Mobile logo stretch - also readable */
         .logo-stretch-mobile {
             transform: scaleX(1.5);
             letter-spacing: 0.15em;
             display: inline-block;
         }
-        /* Remove ALL transitions from gallery for performance */
-        #gallery-grid,
-        #gallery-grid {
-            position: relative; /* Positioned items are relative to this container */
+        /* Gallery and shop grids */
+        #gallery-grid, #shop-grid {
+            position: relative;
         }
-        #shop-grid {
-            position: relative; /* Positioned items are relative to this container */
-        }
-        #gallery-grid > div,
-        #shop-grid > div,
-        #gallery-grid > div > div,
-        #gallery-grid img {
+        #gallery-grid > div, #shop-grid > div,
+        #gallery-grid > div > div, #gallery-grid img,
+        #shop-grid > div > div, #shop-grid img {
             transition: none !important;
         }
-        /* Only add transitions to non-gallery UI elements */
         button, a, nav button {
             transition: opacity 0.3s ease;
+            font-stretch: 200%;
+            letter-spacing: 0.25em;
         }
-        /* Reset button always visible */
-        #reset-btn {
-            width: 60px; /* Fixed width to maintain spacing */
-            font-size: 0.875rem;
-            padding: 0 0.5rem;
-            height: 1.75rem;
+        @media (max-width: 768px) {
+            nav button, button, a {
+                font-stretch: 150%;
+                letter-spacing: 0.15em;
+            }
         }
-        #reset-btn-mobile {
-            width: 45px; /* Fixed width for mobile */
-        }
-        /* Stretch navigation buttons */
-        nav button, #tab-contact, #tab-contact-mobile {
-            font-stretch: 180%;
-            letter-spacing: 0.2em;
-        }
-        /* Keep header above all images */
+        /* Header and footer */
         header {
             z-index: 10000 !important;
             position: relative;
@@ -229,37 +179,24 @@
             z-index: 10001;
             pointer-events: auto;
         }
-        /* Force footer to absolute bottom - always visible */
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
         .section {
             flex: 1 0 auto;
             min-height: 0;
+            display: none;
         }
+        .section.active { display: block; }
         footer {
             flex-shrink: 0;
             z-index: 9999;
             background: white;
-            width: 100%;
-            margin-top: auto;
             position: relative;
         }
         @media (max-width: 768px) {
             footer {
-                padding-bottom: env(safe-area-inset-bottom, 0); /* Account for notch on iPhone */
+                padding-bottom: env(safe-area-inset-bottom, 0);
             }
         }
-        #unlock-tutorial.hidden {
-            display: none;
-        }
+        /* Gallery unlocked state */
         .gallery-unlocked #gallery-grid,
         .gallery-unlocked #shop-grid {
             position: relative;
@@ -267,12 +204,8 @@
         .gallery-unlocked #gallery-grid > div,
         .gallery-unlocked #shop-grid > div {
             cursor: move !important;
-            z-index: 1;
             user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            touch-action: none; /* Prevent default touch behaviors when unlocked */
+            touch-action: none;
         }
         .gallery-unlocked #gallery-grid > div.dragging,
         .gallery-unlocked #shop-grid > div.dragging {
@@ -282,27 +215,94 @@
             pointer-events: none;
             will-change: transform;
         }
-        /* When items have been positioned - ALWAYS absolute */
+        /* Positioned items */
         #gallery-grid > div.positioned,
         #shop-grid > div.positioned {
             position: absolute !important;
             min-width: 50px;
             min-height: 50px;
-            z-index: 1; /* Base z-index for positioned items */
+            z-index: 1;
         }
+        /* Desktop resize */
+        @media (min-width: 769px) {
+            .gallery-unlocked #gallery-grid > div.positioned,
+            .gallery-unlocked #shop-grid > div.positioned {
+                resize: both;
+                overflow: hidden;
+            }
+            body:not(.gallery-unlocked) #gallery-grid > div.positioned,
+            body:not(.gallery-unlocked) #shop-grid > div.positioned {
+                resize: none;
+            }
+            body:not(.gallery-unlocked) #gallery-grid > div.positioned,
+            body:not(.gallery-unlocked) #shop-grid > div.positioned {
+                cursor: pointer !important;
+            }
+        }
+        /* Mobile resize handle */
+        @media (max-width: 768px) {
+            #gallery-grid > div.positioned,
+            #shop-grid > div.positioned {
+                resize: none !important;
+            }
+            .gallery-unlocked #gallery-grid > div.positioned::after,
+            .gallery-unlocked #shop-grid > div.positioned::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                width: 30px;
+                height: 30px;
+                background: linear-gradient(135deg, transparent 40%, rgba(0,0,0,0.4) 40%);
+                cursor: nwse-resize;
+                pointer-events: auto;
+                z-index: 10;
+            }
+        }
+        #gallery-grid > div.positioned .aspect-square,
+        #shop-grid > div.positioned .aspect-square {
+            width: 100% !important;
+            height: 100% !important;
+            aspect-ratio: auto !important;
+        }
+        #gallery-grid > div.positioned img,
+        #shop-grid > div.positioned img {
+            width: 100%;
+            height: 100%;
+            object-fit: fill;
+        }
+        .gallery-unlocked #gallery-grid > div.positioned img,
+        .gallery-unlocked #shop-grid > div.positioned img {
+            pointer-events: none;
+        }
+        .aspect-square {
+            aspect-ratio: 1 / 1;
+        }
+        /* Grid column classes */
+        .grid-cols-7 { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+        .grid-cols-8 { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+        .grid-cols-9 { grid-template-columns: repeat(9, minmax(0, 1fr)); }
+        .grid-cols-10 { grid-template-columns: repeat(10, minmax(0, 1fr)); }
+        /* Modals and overlays */
+        #menu { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        #overlay { transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        #lightbox { 
+            z-index: 100000 !important;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #lightbox.show { opacity: 1; }
+        body.lightbox-open { overflow: hidden; }
+        #lightbox-image { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tab-active { border-bottom: 2px solid black; }
         /* Product modal */
         #product-modal {
             backdrop-filter: blur(4px);
+            z-index: 100000;
         }
         #product-modal .bg-white {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        
-        /* Ensure lightbox is always above everything */
-        #lightbox {
-            z-index: 100000 !important;
-        }
-        /* Color picker inline panel */
+        /* Color picker */
         #color-picker {
             position: fixed;
             top: 80px;
@@ -326,9 +326,7 @@
                 max-height: 60vh;
             }
         }
-        #color-picker.show {
-            display: block;
-        }
+        #color-picker.show { display: block; }
         .color-input-group {
             margin-bottom: 0.75rem;
         }
@@ -344,9 +342,7 @@
             gap: 0.35rem;
         }
         @media (max-width: 768px) {
-            .color-swatches {
-                gap: 0.25rem;
-            }
+            .color-swatches { gap: 0.25rem; }
         }
         .color-swatch {
             width: 100%;
@@ -354,16 +350,11 @@
             border: 2px solid black;
             cursor: pointer;
             transition: transform 0.15s ease;
-            -webkit-tap-highlight-color: transparent;
             will-change: transform;
         }
-        .color-swatch:active {
-            transform: scale(0.95);
-        }
+        .color-swatch:active { transform: scale(0.95); }
         @media (min-width: 769px) {
-            .color-swatch:hover {
-                transform: scale(1.1);
-            }
+            .color-swatch:hover { transform: scale(1.1); }
         }
         .color-swatch.selected {
             border-width: 3px;
@@ -383,127 +374,7 @@
             cursor: pointer;
             font-size: 0.75rem;
         }
-        .color-picker-buttons button:hover {
-            opacity: 0.6;
-        }
-        /* Mobile: custom resize handle instead of native resize */
-        @media (max-width: 768px) {
-            #gallery-grid > div.positioned {
-                resize: none !important; /* Disable native resize on mobile */
-            }
-            /* Show custom resize handle indicator on mobile when unlocked */
-            .gallery-unlocked #gallery-grid > div.positioned::after,
-            .gallery-unlocked #shop-grid > div.positioned::after {
-                content: '';
-                position: absolute;
-                bottom: 0;
-                right: 0;
-                width: 30px;
-                height: 30px;
-                background: linear-gradient(135deg, transparent 40%, rgba(0,0,0,0.4) 40%);
-                cursor: nwse-resize;
-                pointer-events: auto;
-                z-index: 10;
-            }
-        }
-        /* Desktop: enable resize when unlocked */
-        @media (min-width: 769px) {
-            .gallery-unlocked #gallery-grid > div.positioned,
-            .gallery-unlocked #shop-grid > div.positioned {
-                resize: both;
-                overflow: hidden;
-            }
-            body:not(.gallery-unlocked) #gallery-grid > div.positioned,
-            body:not(.gallery-unlocked) #shop-grid > div.positioned {
-                resize: none;
-            }
-        }
-        /* Hide native resize handle */
-        #gallery-grid > div.positioned::-webkit-resizer {
-            display: none;
-        }
-        #gallery-grid > div.positioned .aspect-square {
-            width: 100% !important;
-            height: 100% !important;
-            aspect-ratio: auto !important;
-        }
-        #gallery-grid > div.positioned img {
-            width: 100%;
-            height: 100%;
-            object-fit: fill;
-        }
-        /* When unlocked, disable pointer events on images so dragging works */
-        .gallery-unlocked #gallery-grid > div.positioned img {
-            pointer-events: none;
-        }
-        /* When locked, positioned items should be clickable */
-        body:not(.gallery-unlocked) #gallery-grid > div.positioned {
-            cursor: pointer !important;
-        }
-        /* Hide any pseudo-elements when not unlocked */
-        #gallery-grid > div::after,
-        #gallery-grid > div::before,
-        #gallery-grid .aspect-square::after,
-        #gallery-grid .aspect-square::before {
-            display: none;
-        }
-        .gallery-unlocked #gallery-grid > div::after,
-        .gallery-unlocked #gallery-grid > div::before {
-            display: block;
-        }
-        .aspect-square {
-            aspect-ratio: 1 / 1;
-        }
-        /* Custom grid column classes for more zoom levels */
-        .grid-cols-7 {
-            grid-template-columns: repeat(7, minmax(0, 1fr));
-        }
-        .grid-cols-8 {
-            grid-template-columns: repeat(8, minmax(0, 1fr));
-        }
-        .grid-cols-9 {
-            grid-template-columns: repeat(9, minmax(0, 1fr));
-        }
-        .grid-cols-10 {
-            grid-template-columns: repeat(10, minmax(0, 1fr));
-        }
-        #menu {
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        #overlay {
-            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        #lightbox {
-            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        #lightbox.show {
-            opacity: 1;
-        }
-        body.lightbox-open {
-            overflow: hidden;
-        }
-        #lightbox-image {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .tab-active {
-            border-bottom: 2px solid black;
-        }
-        .section {
-            display: none;
-        }
-        .section.active {
-            display: block;
-        }
-        /* Image loading placeholder */
-        .image-loading {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
+        .color-picker-buttons button:hover { opacity: 0.6; }
     </style>
 </head>
 <body class="bg-white">
@@ -755,26 +626,14 @@
     </footer>
 
     <script>
-        const MAINTENANCE = {
-            gallery: false,
-            weblog: false,
-            shop: false,
-            contact: false
-        };
-        const MAINTENANCE_PASSWORD = "w59n1";
-
         let zoomLevel = window.innerWidth <= 768 ? 3 : 6;
         const zoomLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         let galleryUnlocked = false;
         let draggedElement = null;
-        let offsetX = 0;
-        let offsetY = 0;
-        let originalPositions = new Map();
         let activeSection = 'gallery';
-        let itemImageMap = new Map(); // Map items to their image data
-        let placeholders = new Map(); // Track placeholders
-        let previousZoomLevel = zoomLevel; // Track zoom level changes
-        let shopItemMap = new Map(); // Map shop items to their product data
+        let itemImageMap = new Map();
+        let placeholders = new Map();
+        let shopItemMap = new Map();
         
         // Default colors
         const defaultBgColor = '#ffffff';
@@ -820,28 +679,6 @@
                 };
                 
                 shopGrid.appendChild(div);
-            });
-        }
-
-        // Store original grid positions - only store NON-positioned items
-        function storeOriginalPositions() {
-            const galleryItems = document.querySelectorAll('#gallery-grid > div:not(.positioned)');
-            
-            galleryItems.forEach((item, index) => {
-                if (!originalPositions.has(item)) {
-                    const rect = item.getBoundingClientRect();
-                    const parentRect = item.parentElement.getBoundingClientRect();
-                    const container = item.querySelector('.aspect-square');
-                    const containerRect = container ? container.getBoundingClientRect() : rect;
-                    
-                    originalPositions.set(item, {
-                        left: rect.left - parentRect.left,
-                        top: rect.top - parentRect.top,
-                        width: rect.width,
-                        height: containerRect.height,
-                        index: index
-                    });
-                }
             });
         }
 
@@ -966,8 +803,8 @@
                 placeholders.delete(item);
             });
             
-            // Clear all tracking
-            originalPositions.clear();
+            // Clear placeholder tracking
+            placeholders.clear();
             zIndexCounter = 100;
             
             // Reset colors to default
@@ -1032,23 +869,22 @@
             }
         }
 
-        // Ultra-simplified drag
+        // Ultra-simplified drag with performance optimizations
         let dragging = false;
-        let resizing = false; // Track if we're resizing instead of dragging
+        let resizing = false;
         let startX, startY, initialLeft, initialTop, initialWidth, initialHeight;
         let zIndexCounter = 100;
+        let rafId = null;
 
         function startDrag(e) {
             if (!galleryUnlocked) return;
             
             const target = e.currentTarget;
-            
-            // If already positioned, get current rect, otherwise get natural rect
             const rect = target.getBoundingClientRect();
             const clickX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
             const clickY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
             
-            // Check if clicking in resize zone (bottom-right corner)
+            // Check if clicking in resize zone
             const resizeZoneSize = window.innerWidth <= 768 ? 30 : 40;
             const isResizeZone = target.classList.contains('positioned') && 
                                  clickX > rect.width - resizeZoneSize && 
@@ -1059,35 +895,33 @@
             
             draggedElement = target;
             
-            // Bring this image to front (but keep below lightbox z-index of 100000)
+            // Bring to front
             zIndexCounter++;
             if (zIndexCounter > 9999) zIndexCounter = 100;
             draggedElement.style.zIndex = zIndexCounter;
             
-            // If not yet positioned, position it now and create placeholder
+            // Position if not already positioned
             if (!draggedElement.classList.contains('positioned')) {
                 const parentRect = draggedElement.parentElement.getBoundingClientRect();
                 const itemRect = draggedElement.getBoundingClientRect();
                 
-                // Create invisible placeholder to maintain grid space
+                // Create placeholder
                 const placeholder = document.createElement('div');
                 placeholder.style.width = itemRect.width + 'px';
                 placeholder.style.height = itemRect.height + 'px';
                 placeholder.style.visibility = 'hidden';
                 placeholder.className = 'grid-placeholder';
                 
-                // Insert placeholder before removing from grid
                 draggedElement.parentNode.insertBefore(placeholder, draggedElement);
                 placeholders.set(draggedElement, placeholder);
                 
-                // Now position the element absolutely AT ITS CURRENT LOCATION
+                // Position absolutely
                 draggedElement.style.position = 'absolute';
                 draggedElement.style.left = (itemRect.left - parentRect.left) + 'px';
                 draggedElement.style.top = (itemRect.top - parentRect.top) + 'px';
                 draggedElement.style.width = itemRect.width + 'px';
                 draggedElement.style.height = itemRect.height + 'px';
                 
-                // Handle both aspect-square (gallery) and regular containers (shop)
                 const container = draggedElement.querySelector('.aspect-square, div:first-child');
                 if (container) {
                     container.style.width = '100%';
@@ -1105,11 +939,9 @@
             initialHeight = parseFloat(draggedElement.style.height) || rect.height;
             
             if (isResizeZone) {
-                // Start resizing
                 resizing = true;
                 dragging = false;
             } else {
-                // Start dragging
                 dragging = true;
                 resizing = false;
                 draggedElement.classList.add('dragging');
@@ -1126,44 +958,51 @@
             if (!draggedElement) return;
             
             e.preventDefault();
-            e.stopPropagation();
             
-            const currentX = e.touches ? e.touches[0].clientX : e.clientX;
-            const currentY = e.touches ? e.touches[0].clientY : e.clientY;
+            // Cancel previous RAF if exists
+            if (rafId) cancelAnimationFrame(rafId);
             
-            const dx = currentX - startX;
-            const dy = currentY - startY;
-            
-            if (resizing) {
-                // Handle resizing
-                const newWidth = initialWidth + dx;
-                const newHeight = initialHeight + dy;
+            rafId = requestAnimationFrame(() => {
+                const currentX = e.touches ? e.touches[0].clientX : e.clientX;
+                const currentY = e.touches ? e.touches[0].clientY : e.clientY;
                 
-                // Set minimum size
-                const minSize = 50;
-                if (newWidth > minSize && newHeight > minSize) {
-                    draggedElement.style.width = newWidth + 'px';
-                    draggedElement.style.height = newHeight + 'px';
-                }
-            } else if (dragging) {
-                // Handle dragging
-                const newLeft = initialLeft + dx;
-                const newTop = initialTop + dy;
+                const dx = currentX - startX;
+                const dy = currentY - startY;
                 
-                // On mobile, constrain to viewport
-                if (window.innerWidth <= 768) {
-                    const maxLeft = window.innerWidth - 100;
-                    const constrainedLeft = Math.max(-50, Math.min(newLeft, maxLeft));
-                    draggedElement.style.left = constrainedLeft + 'px';
-                    draggedElement.style.top = newTop + 'px';
-                } else {
-                    draggedElement.style.left = newLeft + 'px';
-                    draggedElement.style.top = newTop + 'px';
+                if (resizing) {
+                    const newWidth = initialWidth + dx;
+                    const newHeight = initialHeight + dy;
+                    
+                    const minSize = 50;
+                    if (newWidth > minSize && newHeight > minSize) {
+                        draggedElement.style.width = newWidth + 'px';
+                        draggedElement.style.height = newHeight + 'px';
+                    }
+                } else if (dragging) {
+                    const newLeft = initialLeft + dx;
+                    const newTop = initialTop + dy;
+                    
+                    if (window.innerWidth <= 768) {
+                        const maxLeft = window.innerWidth - 100;
+                        const constrainedLeft = Math.max(-50, Math.min(newLeft, maxLeft));
+                        draggedElement.style.left = constrainedLeft + 'px';
+                        draggedElement.style.top = newTop + 'px';
+                    } else {
+                        draggedElement.style.left = newLeft + 'px';
+                        draggedElement.style.top = newTop + 'px';
+                    }
                 }
-            }
+                
+                rafId = null;
+            });
         }
 
         function endDrag() {
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+            }
+            
             if (draggedElement) {
                 draggedElement.classList.remove('dragging');
                 draggedElement = null;
@@ -1340,14 +1179,6 @@
         }
 
         function showSection(section) {
-            if (MAINTENANCE[section]) {
-                const entered = prompt(`${section.charAt(0).toUpperCase() + section.slice(1)} is under maintenance. Enter password:`);
-                if (entered !== MAINTENANCE_PASSWORD) {
-                    alert('Access denied. This page is temporarily unavailable.');
-                    return;
-                }
-            }
-            
             activeSection = section;
             
             try {
@@ -1537,7 +1368,7 @@
             { id: 6, url: 'images/overtoolate.jpg', title: 'Over Too Late', description: 'Over Too Late\n1417x1417\n01/07/2026', alt: 'Over Too Late' },
             { id: 7, url: 'images/vivalapsycho.jpg', title: 'Viva La Psycho', description: 'Viva La Psycho\n1417x1417\n01/03/2026', alt: 'Viva La Psycho' },
             { id: 8, url: 'images/MONSTERBEAST_FINAL.jpg', title: 'Beast', description: 'Beast\nFeatured on @welcome.jpg Instagram page\n1417x1417\n12/24/2025', alt: 'Beast' },
-            { id: 9, url: 'images/nightmare.jpg', title: 'Nightmare', description: 'Nightmare\nI had a dream the other night that was exactly this. It didnt really seem too abstract but my social media feed looked like this, i had an extra finger and was aware i was dreaming. Everything was blue and i was in the house i grew up in. I remember ‘waking up’ to my alarm hearing whispering and weird noises then i actually woke up in the same room to my real alarm. No voices or noises.\n1417x1417\n12/24/2025', alt: 'Nightmare' },            
+            { id: 9, url: 'images/nightmare.jpg', title: 'Nightmare', description: 'Nightmare\nI had a dream the other night that was exactly this. It didnt really seem too abstract but my social media feed looked like this, i had an extra finger and was aware i was dreaming. Everything was blue and i was in the house i grew up in. I remember \'waking up\' to my alarm hearing whispering and weird noises then i actually woke up in the same room to my real alarm. No voices or noises.\n1417x1417\n12/24/2025', alt: 'Nightmare' },            
             { id: 10, url: 'images/HOLYMASK.jpg', title: 'Holy Mask', description: 'The Holy Mask\n1417x1417\n12/21/2025', alt: 'The Holy Mask' },
             { id: 11, url: 'images/FREACKY.jpg', title: 'Freacky', description: 'Freacky\n1417x1417\n12/21/2025', alt: 'Freacky' },
             { id: 12, url: 'images/FUCKTHIS.jpg', title: 'Fuck This', description: 'Fuck This\nFeatured in @crawlinghand zine\n1417x1417\n12/20/2025', alt: 'Fuck This' },
@@ -1608,6 +1439,7 @@
                     { type: 'image', url: 'images/update3.png', alt: 'update3' },
                     { type: 'image', url: 'images/update4.png', alt: 'update4' },                    
                 ]
+            },
             {
                 date: '01/19/2026 12:43 am',
                 title: 'Website Update',
@@ -1650,11 +1482,13 @@
             }
         ];
 
-        // Initialize gallery with immediate loading for faster display
+        // Initialize gallery with optimized batch DOM operations
         const gallery = document.getElementById('gallery-grid');
         updateGalleryGrid();
         
-        images.forEach((image, index) => {
+        // Create fragment for batch append
+        const fragment = document.createDocumentFragment();
+        images.forEach((image) => {
             const div = document.createElement('div');
             div.className = 'cursor-pointer';
             div.setAttribute('role', 'listitem');
@@ -1663,19 +1497,21 @@
                     <img src="${image.url}" 
                          alt="${image.alt}" 
                          title="${image.title}"
-                         class="w-full h-full object-cover">
+                         class="w-full h-full object-cover"
+                         loading="lazy">
                 </div>
             `;
             
-            // Store mapping between div and image data
             itemImageMap.set(div, image);
-            
             div.onclick = () => openLightbox(image.url, image.title, image.description, image.alt);
-            gallery.appendChild(div);
+            fragment.appendChild(div);
         });
+        gallery.appendChild(fragment);
 
-        // Initialize blog posts with semantic HTML and SEO-friendly markup
+        // Initialize blog posts with optimized batch operations
         const blogContainer = document.getElementById('blog-posts');
+        const blogFragment = document.createDocumentFragment();
+        
         blogPosts.forEach(post => {
             const article = document.createElement('article');
             article.className = 'pb-8';
@@ -1701,8 +1537,9 @@
                 <div class="text-sm text-black leading-relaxed whitespace-pre-wrap" itemprop="articleBody">${post.content}</div>
                 ${mediaHTML}
             `;
-            blogContainer.appendChild(article);
+            blogFragment.appendChild(article);
         });
+        blogContainer.appendChild(blogFragment);
 
         function openLightbox(url, title, description, alt) {
             const lightbox = document.getElementById('lightbox');
@@ -1749,39 +1586,6 @@
             { id: 10, name: 'Product 10', price: 27.99, image: 'images/PEACLY.jpg', description: 'Sample product description', inStock: true },
         ];
 
-        // Render shop products
-        const shopContainer = document.getElementById('shop-items');
-        shopProducts.forEach(product => {
-            const productDiv = document.createElement('div');
-            productDiv.className = 'group cursor-pointer';
-            productDiv.setAttribute('itemscope', '');
-            productDiv.setAttribute('itemtype', 'https://schema.org/Product');
-            productDiv.innerHTML = `
-                <div class="aspect-square overflow-hidden bg-gray-50 mb-3 image-loading">
-                    <img data-src="${product.image}" 
-                         alt="${product.name}" 
-                         itemprop="image"
-                         class="w-full h-full object-cover group-hover:opacity-90 transition-opacity duration-300"
-                         loading="lazy">
-                </div>
-                <div class="text-sm mb-1" itemprop="name">${product.name}</div>
-                <div class="text-sm text-gray-600" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
-                    <span itemprop="price">$${product.price.toFixed(2)}</span>
-                    <meta itemprop="priceCurrency" content="USD">
-                </div>
-                ${product.inStock ? '' : '<div class="text-sm text-gray-400 mt-1">Sold Out</div>'}
-            `;
-            productDiv.onclick = () => {
-                alert(`Product details for: ${product.name}\n\nThis will be integrated with ecommerce platform.`);
-            };
-            shopContainer.appendChild(productDiv);
-            
-            const img = productDiv.querySelector('img');
-            if (img) {
-                imageObserver.observe(img);
-            }
-        });
-
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             const lightbox = document.getElementById('lightbox');
@@ -1822,18 +1626,21 @@
             }
         });
 
-        // Adjust zoom level on resize
+        // Debounced resize handler for performance
+        let resizeTimeout;
         window.addEventListener('resize', function() {
-            const isMobile = window.innerWidth <= 768;
-            const expectedZoom = isMobile ? 3 : 6;
-            
-            // Only reset if significantly different
-            if (Math.abs(zoomLevel - expectedZoom) > 2) {
-                const oldZoom = zoomLevel;
-                zoomLevel = expectedZoom;
-                updateGalleryGrid();
-                scalePositionedItems(oldZoom, zoomLevel);
-            }
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                const isMobile = window.innerWidth <= 768;
+                const expectedZoom = isMobile ? 3 : 6;
+                
+                if (Math.abs(zoomLevel - expectedZoom) > 2) {
+                    const oldZoom = zoomLevel;
+                    zoomLevel = expectedZoom;
+                    updateGalleryGrid();
+                    scalePositionedItems(oldZoom, zoomLevel);
+                }
+            }, 150);
         });
     </script>
 </body>
